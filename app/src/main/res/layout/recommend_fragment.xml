@@ -16,12 +16,17 @@
             android:src="@mipmap/compony_logo"/>
 
         <Button
-            android:id="@+id/search"
+            android:id="@+id/recommend_focus"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="60dp"
             android:background="@drawable/recommend_focus_btn"/>
     </FrameLayout>
+
+    <com.lhh.ptrrv.library.PullToRefreshRecyclerView
+        android:id="@+id/recommend_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
