@@ -3,7 +3,7 @@ package com.qianfeng.manmankan.model.programas;
 /**
  * Created by Administrator on 2016/9/20.
  */
-public class Programa {
+public class ProgramaModel {
 
     /**
      * id : 3

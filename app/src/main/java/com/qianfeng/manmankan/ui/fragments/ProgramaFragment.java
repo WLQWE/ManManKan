@@ -1,18 +1,23 @@
 package com.qianfeng.manmankan.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.qianfeng.manmankan.R;
+import com.qianfeng.manmankan.adapters.ProgramaAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
-import com.qianfeng.manmankan.model.programas.Programa;
+import com.qianfeng.manmankan.model.programas.ProgramaModel;
+import com.qianfeng.manmankan.ui.ProgramaChild;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -26,11 +31,12 @@ import butterknife.ButterKnife;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class ProgramaFragment extends BaseFragment {
-
+public class ProgramaFragment extends BaseFragment implements AdapterView.OnItemClickListener {
+    private List<ProgramaModel>list;
     public static final String TAG = ProgramaFragment.class.getSimpleName();
     @BindView(R.id.programa_gridview)
     GridView mGridView;
+    private ProgramaAdapter adapter;
 
     @Nullable
     @Override
@@ -53,24 +59,28 @@ public class ProgramaFragment extends BaseFragment {
             @Override
             public void onSuccess(String result) {
                 Log.e(TAG,"onSuccess");
+                Log.e(TAG,result);
                 Gson gson = new Gson();
-                List<Programa>list = gson.fromJson(result, new TypeToken<List<Programa>>() {}.getType());
+               list= gson.fromJson(result, new TypeToken<List<ProgramaModel>>() {}.getType());
                 Log.e(TAG,list.size()+"");
+                if (list!=null) {
+                    adapter.updateRes(list);
+                }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                Log.e(TAG,"onSuccess");
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-
+                Log.e(TAG,"onCancelled");
             }
 
             @Override
             public void onFinished() {
-
+                Log.e(TAG,"onFinished");
             }
         });
 
@@ -78,7 +88,21 @@ public class ProgramaFragment extends BaseFragment {
 
     private void initView() {
         ButterKnife.bind(this, layout);
+        adapter = new ProgramaAdapter(getContext());
+        mGridView.setAdapter(adapter);
+        mGridView.setOnItemClickListener(this);
 
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(getContext() ,"第"+position+"个", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), ProgramaChild.class);
+        if (list!=null) {
+            intent.putExtra("slug",list.get(position).getSlug());
+            intent.putExtra("name",list.get(position).getName());
+        }
+        startActivity(intent);
 
     }
 }
