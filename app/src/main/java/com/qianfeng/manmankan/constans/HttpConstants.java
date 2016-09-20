@@ -5,7 +5,6 @@ package com.qianfeng.manmankan.constans;
  */
 public class HttpConstants {
 //    三个首页接口
-    public static final String  RECOMMEND_HEADER="http://www.quanmin.tv/json/page/app-data/info.json?device=869953020997409&v=2.1.3&screen=2&ch=wandoujia&sh=1812&sw=1080&uid=WTKDU16629006724&net=0&ver=4&os=1";
     public static final String  RECOMMEND="http://www.quanmin.tv/json/page/appv2-index/info.json?09201152&device=869953020997409&v=2.1.3&screen=2&ch=wandoujia&sh=1812&sw=1080&uid=WTKDU16629006724&net=0&ver=4&os=1";
     public static final String PROGRAMA="http://www.quanmin.tv/json/categories/list.json?09201104&device=869953020997409&v=2.1.3&screen=2&ch=wandoujia&sh=1812&sw=1080&uid=WTKDU16629006724&net=0&ver=4&os=1";
     public static final String LIVE_START="http://www.quanmin.tv/json/play/list";

@@ -23,4 +23,5 @@
             android:layout_marginRight="60dp"
             android:background="@drawable/recommend_focus_btn"/>
     </FrameLayout>
+
 </LinearLayout>
