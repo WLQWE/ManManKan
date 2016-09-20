@@ -14,5 +14,13 @@
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:src="@mipmap/compony_logo"/>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="60dp"
+            android:background="@drawable/recommend_focus_btn"/>
     </FrameLayout>
 </LinearLayout>

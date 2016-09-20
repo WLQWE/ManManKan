@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -87,6 +88,11 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             transaction.add(R.id.container, mShowFragment, tag);
         }
         transaction.commit();
+
+    }
+
+    @OnClick(R.id.search)
+    public void onClick() {
 
     }
 }
