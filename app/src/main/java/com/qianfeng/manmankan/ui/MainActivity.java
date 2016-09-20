@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Button;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.ui.fragments.LiveFragment;
@@ -21,8 +20,6 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
-    @BindView(R.id.title)
-    TextView title;
     @BindView(R.id.search)
     Button search;
     @BindView(R.id.bottom_btn)
