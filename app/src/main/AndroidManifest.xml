@@ -20,15 +20,17 @@
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.MainActivity">
-            <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".ui.BaseActivity" />
         <activity android:name=".ui.PlayerActivity" >
-            <intent-filter>
 
-            </intent-filter>
+
+
         </activity>
         <activity android:name=".ui.ProgramaChild"></activity>
     </application>
