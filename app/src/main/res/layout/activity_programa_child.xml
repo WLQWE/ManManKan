@@ -7,7 +7,7 @@
     tools:context="com.qianfeng.manmankan.ui.ProgramaChild">
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="60dp">
         <TextView
             android:id="@+id/programa_child_title"
             android:layout_gravity="center"
@@ -17,8 +17,11 @@
             android:layout_height="wrap_content"
             android:text="频道名称"/>
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/programa_child_back"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@mipmap/btn_back_pressed"/>
     </FrameLayout>
     <com.lhh.ptrrv.library.PullToRefreshRecyclerView

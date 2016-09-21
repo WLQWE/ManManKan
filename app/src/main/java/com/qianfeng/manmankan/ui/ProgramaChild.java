@@ -2,20 +2,17 @@ package com.qianfeng.manmankan.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
 import com.qianfeng.manmankan.R;
-import com.qianfeng.manmankan.adapters.ProgramaAdapter;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
@@ -31,34 +28,42 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.OnClickItemListener {
+public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.OnClickItemListener, View.OnClickListener {
 
     @BindView(R.id.programa_child_title)
     TextView mTitle;
     @BindView(R.id.programa_child_recyclerview)
     PullToRefreshRecyclerView mRefresh;
+    @BindView(R.id.programa_child_back)
+    ImageView mBack;
     private ProgramaChildAdapter adapter;
-    private List<ProgramaChildModel.DataBean>data=new ArrayList<>();
+    private List<ProgramaChildModel.DataBean> data = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_programa_child);
+        ButterKnife.bind(this);
         initView();
         setupView(State.DOMN);
     }
 
     @Override
-    public void onClick(View view,int position) {
-        Toast.makeText(ProgramaChild.this, ""+position, Toast.LENGTH_SHORT).show();
+    public void onClick(View view, int position) {
+        Toast.makeText(ProgramaChild.this, "" + position, Toast.LENGTH_SHORT).show();
         String uid = data.get(position).getUid();
         Intent intent = new Intent(this, PlayerActivity.class);
-        intent.putExtra("uid",uid);
+        intent.putExtra("uid", uid);
         startActivity(intent);
 
     }
 
-    public enum State{DOMN,UP}
+    @Override
+    public void onClick(View v) {
+        finish();
+    }
+
+    public enum State {DOMN, UP}
 
     private void setupView(final State state) {
 
@@ -76,8 +81,8 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
                 Gson gson = new Gson();
                 ProgramaChildModel childModel = gson.fromJson(result, ProgramaChildModel.class);
                 data = childModel.getData();
-                if (data!=null) {
-                    switch (state){
+                if (data != null) {
+                    switch (state) {
                         case DOMN:
                             adapter.updateRes(data);
                             break;
@@ -87,9 +92,11 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
                     }
                 }
             }
+
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
             }
+
             @Override
             public void onCancelled(CancelledException cex) {
 
@@ -107,7 +114,6 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     }
 
     private void initView() {
-        setContentView(R.layout.activity_programa_child);
         ButterKnife.bind(this);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         mRefresh.setLayoutManager(layoutManager);
@@ -115,20 +121,20 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
         mRefresh.setAdapter(adapter);
         adapter.setListener(this);
         mRefresh.setSwipeEnable(true);
-        mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener(){
+        mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener() {
             @Override
             public void onLoadMoreItems() {
                 setupView(State.UP);
             }
 
         });
-        mRefresh.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener(){
+        mRefresh.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 setupView(State.DOMN);
             }
         });
-
+        mBack.setOnClickListener(this);
 
     }
 }
