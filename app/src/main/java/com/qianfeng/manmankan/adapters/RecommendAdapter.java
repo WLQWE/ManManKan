@@ -22,15 +22,19 @@ import butterknife.ButterKnife;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> {
+public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> implements View.OnClickListener {
 
-    private List<Recommendation> data;
+    private static final String TAG = RecommendAdapter.class.getSimpleName();
+    private List<List<Recommendation>> data;
 
     private List<Lists> list;
 
     private LayoutInflater inflater;
 
     private Context context;
+
+    private boolean flag;
+    private RecommendGridAdapter mAdapter;
 
     public RecommendAdapter(Context context) {
         this.context = context;
@@ -39,7 +43,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         inflater = LayoutInflater.from(context);
     }
 
-    public void updateRes(List<Recommendation> data, List<Lists> list) {
+    public void updateRes(List<List<Recommendation>> data, List<Lists> list) {
         if (data != null && list != null) {
             this.data.clear();
             this.list.clear();
@@ -49,7 +53,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         }
     }
 
-    public void addRes(List<Recommendation> data, List<Lists> list) {
+    public void addRes(List<List<Recommendation>> data, List<Lists> list) {
         if (data != null && list != null) {
             this.data.addAll(data);
             this.list.addAll(list);
@@ -70,14 +74,30 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.title.setText(list.get(position).getName());
-        if (position == 0) {
+        holder.title.setText(" " + list.get(position + 2).getName());
+        Drawable right = null;
+        if (position != 0) {
+            flag = false;
+            holder.btn.setText("瞅瞅");
+            right = context.getResources().getDrawable(R.drawable.btn_home_content_rignt_cc);
+        } else {
+            flag = true;
             holder.btn.setText("换一批");
-            Drawable right = context.getResources().getDrawable(R.drawable.btn_home_content_rignt_huan);
-            right.setBounds(0, 0, right.getMinimumWidth(), right.getMinimumHeight());
-            holder.btn.setCompoundDrawables(null, null, right, null);
-        }else {
+            right = context.getResources().getDrawable(R.drawable.btn_home_content_rignt_huan);
+        }
+        right.setBounds(0, 0, right.getMinimumWidth(), right.getMinimumHeight());
+        holder.btn.setCompoundDrawables(null, null, right, null);
+        holder.btn.setOnClickListener(this);
+        holder.btn.setTag(position);
+        mAdapter = new RecommendGridAdapter(context, data.get(position), flag);
+        holder.gridView.setAdapter(mAdapter);
+    }
 
+    @Override
+    public void onClick(View v) {
+        int position = (Integer) v.getTag();
+        if (position == 0) {
+            mAdapter.updateRes(data.get(0));
         }
     }
 

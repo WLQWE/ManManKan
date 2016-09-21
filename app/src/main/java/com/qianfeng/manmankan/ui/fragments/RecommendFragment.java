@@ -20,6 +20,7 @@ import com.qianfeng.manmankan.adapters.RecommendHeaderAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.constans.State;
 import com.qianfeng.manmankan.model.recommends.Index;
+import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.model.recommends.Recommends;
 import com.squareup.picasso.Picasso;
 
@@ -113,6 +114,25 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                 }
                 mHeaderPager.setData(imgs, tips);
                 headerAdapter.updateRes(recommends.getClassifications());
+                List<List<Recommendation>> data = new ArrayList<>();
+                data.add(recommends.getRecommendations());
+                data.add(recommends.getLols());
+                data.add(recommends.getBeautys());
+                data.add(recommends.getHeartstones());
+                data.add(recommends.getHuwais());
+                data.add(recommends.getOverwatchs());
+                data.add(recommends.getBlizzards());
+                data.add(recommends.getSports());
+                data.add(recommends.getQqfeiches());
+                data.add(recommends.getMobilegames());
+                data.add(recommends.getWangzhes());
+                data.add(recommends.getDota2s());
+                data.add(recommends.getTvgames());
+                data.add(recommends.getWebgames());
+                data.add(recommends.getDnfs());
+                data.add(recommends.getMinecrafts());
+                mAdapter.updateRes(data, recommends.getLists());
+
             }
 
             @Override

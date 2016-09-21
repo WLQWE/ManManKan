@@ -63,7 +63,7 @@ public class Recommends {
     @SerializedName("app-minecraft")
     private List<Recommendation> minecrafts;
 
-    @SerializedName("app-list")
+    @SerializedName("list")
     private List<Lists> lists;
 
     public List<Index> getIndexs() {
