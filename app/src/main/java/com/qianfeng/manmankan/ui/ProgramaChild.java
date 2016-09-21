@@ -7,12 +7,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
 import com.qianfeng.manmankan.R;
+import com.qianfeng.manmankan.adapters.ProgramaAdapter;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
@@ -27,7 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProgramaChild extends AppCompatActivity {
+public class ProgramaChild extends AppCompatActivity implements ProgramaChildAdapter.OnClickItemListener {
 
     @BindView(R.id.programa_child_title)
     TextView mTitle;
@@ -41,6 +43,11 @@ public class ProgramaChild extends AppCompatActivity {
 
         initView();
         setupView(State.DOMN);
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
     public enum State{DOMN,UP}
@@ -94,7 +101,9 @@ public class ProgramaChild extends AppCompatActivity {
             @Override
             public void onFinished() {
                 mRefresh.setOnRefreshComplete();
+                mRefresh.setOnLoadMoreComplete();
             }
+
         });
 
 
@@ -121,7 +130,6 @@ public class ProgramaChild extends AppCompatActivity {
                 setupView(State.DOMN);
             }
         });
-
 
 
     }

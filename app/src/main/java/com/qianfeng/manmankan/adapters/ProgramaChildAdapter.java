@@ -23,12 +23,17 @@ import butterknife.ButterKnife;
 /**
  * Created by Administrator on 2016/9/20.
  */
-public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdapter.ViewHolder> {
+public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdapter.ViewHolder> implements View.OnClickListener {
 
     private List<ProgramaChildModel.DataBean> data;
     private LayoutInflater inflater;
     private ImageOptions options;
-    private ImageOptions options1;
+    private OnClickItemListener listener;
+
+    public void setListener(OnClickItemListener listener) {
+        this.listener = listener;
+    }
+
     public ProgramaChildAdapter(Context context) {
         data = new ArrayList<>();
         inflater = LayoutInflater.from(context);
@@ -48,6 +53,7 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.programa_child_item, parent, false);
+        itemView.setOnClickListener(this);
         return new ViewHolder(itemView);
     }
 
@@ -64,6 +70,12 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        listener.onClick(v);
     }
 
     static
@@ -85,6 +97,9 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
             ButterKnife.bind(this, itemView);
 
         }
+    }
+    public interface OnClickItemListener{
+        void onClick(View view);
     }
 
 
