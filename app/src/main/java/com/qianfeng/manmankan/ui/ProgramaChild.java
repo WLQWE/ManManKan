@@ -40,10 +40,12 @@ public class ProgramaChild extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         initView();
-        setupView();
+        setupView(State.DOMN);
     }
 
-    private void setupView() {
+    public enum State{DOMN,UP}
+
+    private void setupView(final State state) {
 
         Intent intent = getIntent();
         String slug = intent.getStringExtra("slug");
@@ -60,6 +62,20 @@ public class ProgramaChild extends AppCompatActivity {
                 Gson gson = new Gson();
                 ProgramaChildModel childModel = gson.fromJson(result, ProgramaChildModel.class);
                 List<ProgramaChildModel.DataBean> data = childModel.getData();
+                if (data!=null) {
+                    switch (state){
+                        case DOMN:
+                            adapter.updateRes(data);
+                            break;
+                        case UP:
+                            adapter.addRes(data);
+                            break;
+
+
+
+                    }
+
+                }
 
 
 
@@ -77,7 +93,7 @@ public class ProgramaChild extends AppCompatActivity {
 
             @Override
             public void onFinished() {
-
+                mRefresh.setOnRefreshComplete();
             }
         });
 
@@ -89,7 +105,23 @@ public class ProgramaChild extends AppCompatActivity {
         ButterKnife.bind(this);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         mRefresh.setLayoutManager(layoutManager);
-        adapter = new ProgramaChildAdapter();
+        adapter = new ProgramaChildAdapter(this);
+        mRefresh.setAdapter(adapter);
+        mRefresh.setSwipeEnable(true);
+        mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener(){
+            @Override
+            public void onLoadMoreItems() {
+                setupView(State.UP);
+            }
+
+        });
+        mRefresh.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                setupView(State.DOMN);
+            }
+        });
+
 
 
     }
