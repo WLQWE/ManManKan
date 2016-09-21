@@ -52,7 +52,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     public void onClick(View view,int position) {
         Toast.makeText(ProgramaChild.this, ""+position, Toast.LENGTH_SHORT).show();
         String uid = data.get(position).getUid();
-        Intent intent = new Intent(this, ProgramaChild.class);
+        Intent intent = new Intent(this, PlayerActivity.class);
         intent.putExtra("uid",uid);
         startActivity(intent);
 
@@ -68,7 +68,6 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
         mTitle.setText(name);
         Date date = new Date();
         CharSequence format = DateFormat.format("MMddhhmm", date);
-        Log.e("tag",format.toString());
         String path = HttpConstants.RECOMMEND_SCROLL_START + slug + HttpConstants.RECOMMEND_SCROLL_MIDDLE + format.toString() + HttpConstants.RECOMMEND_SCROLL_END;
         RequestParams params = new RequestParams(path);
         x.http().get(params, new Callback.CommonCallback<String>() {
