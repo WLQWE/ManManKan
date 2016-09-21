@@ -52,7 +52,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     public void onClick(View view,int position) {
         Toast.makeText(ProgramaChild.this, ""+position, Toast.LENGTH_SHORT).show();
         String uid = data.get(position).getUid();
-        Intent intent = new Intent(this, ProgramaThird.class);
+        Intent intent = new Intent(this, ProgramaChild.class);
         intent.putExtra("uid",uid);
         startActivity(intent);
 
