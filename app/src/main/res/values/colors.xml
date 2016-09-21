@@ -7,4 +7,7 @@
     <color name="pink">#66ff0000</color>
     <color name="searchColor">#66999999</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="tm_black">#99000000</color>
+    <color name="tm_white">#11ffffff</color>
 </resources>

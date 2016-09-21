@@ -21,8 +21,6 @@ public class KanTVApp extends Application {
         //Picasso初始化
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.defaultBitmapConfig(Bitmap.Config.RGB_565)
-                //显示加载标签
-                .indicatorsEnabled(true)
                 //Log
                 .loggingEnabled(true);
 

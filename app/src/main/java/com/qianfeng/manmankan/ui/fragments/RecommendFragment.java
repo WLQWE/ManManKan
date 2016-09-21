@@ -9,15 +9,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
 import com.qianfeng.manmankan.R;
+import com.qianfeng.manmankan.adapters.RecommendAdapter;
+import com.qianfeng.manmankan.adapters.RecommendHeaderAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.constans.State;
 import com.qianfeng.manmankan.model.recommends.Index;
 import com.qianfeng.manmankan.model.recommends.Recommends;
+import com.squareup.picasso.Picasso;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -34,16 +38,17 @@ import cn.bingoogolapple.bgabanner.BGABanner;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener {
+public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter {
 
     public static final String TAG = RecommendFragment.class.getSimpleName();
 
     @BindView(R.id.recommend_recycler)
     PullToRefreshRecyclerView recommendRecycler;
-    @BindView(R.id.recommend_header_pager)
+
     BGABanner mHeaderPager;
-    @BindView(R.id.recommend_header_recycler)
     RecyclerView mHeaderRecycler;
+    private RecommendHeaderAdapter headerAdapter;
+    private RecommendAdapter mAdapter;
 
     @Nullable
     @Override
@@ -65,6 +70,8 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     private void initView() {
         ButterKnife.bind(this, layout);
         View headerView = View.inflate(getContext(), R.layout.recommend_header, null);
+        mHeaderPager = (BGABanner) headerView.findViewById(R.id.recommend_header_pager);
+        mHeaderRecycler = (RecyclerView) headerView.findViewById(R.id.recommend_header_recycler);
         mHeaderPager.setOnItemClickListener(this);
         recommendRecycler.addHeaderView(headerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -73,6 +80,16 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
         recommendRecycler.setPagingableListener(this);
         //设置下拉刷新
         recommendRecycler.setOnRefreshListener(this);
+
+        mHeaderPager.setAdapter(this);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mHeaderRecycler.setLayoutManager(linearLayoutManager);
+        headerAdapter = new RecommendHeaderAdapter(getContext());
+        mHeaderRecycler.setAdapter(headerAdapter);
+
+        mAdapter = new RecommendAdapter(getContext());
+        recommendRecycler.setAdapter(mAdapter);
 
     }
 
@@ -88,11 +105,14 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                 List<String> tips = new ArrayList<>();
                 List<Index> indexs = recommends.getIndexs();
                 for (Index index : indexs) {
-                    imgs.add(index.getLink_object().getRecommend_image());
-                    tips.add(index.getLink_object().getTitle());
+                    String recommend_image = index.getLink_object().getRecommend_image();
+                    if (!recommend_image.equals("")) {
+                        imgs.add(recommend_image);
+                        tips.add(index.getLink_object().getTitle());
+                    }
                 }
-                mHeaderPager.setData(imgs,tips);
-
+                mHeaderPager.setData(imgs, tips);
+                headerAdapter.updateRes(recommends.getClassifications());
             }
 
             @Override
@@ -112,6 +132,14 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                 recommendRecycler.setOnRefreshComplete();
             }
         });
+    }
+
+    @Override
+    public void fillBannerItem(BGABanner banner, View view, Object model, int position) {
+        Picasso.with(getActivity())
+                .load((String) model)
+                .placeholder(R.mipmap.ads_default)
+                .into((ImageView) view);
     }
 
     @OnClick(R.id.recommend_focus)
