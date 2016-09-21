@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
@@ -23,19 +24,21 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProgramaChild extends AppCompatActivity implements ProgramaChildAdapter.OnClickItemListener {
+public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.OnClickItemListener {
 
     @BindView(R.id.programa_child_title)
     TextView mTitle;
     @BindView(R.id.programa_child_recyclerview)
     PullToRefreshRecyclerView mRefresh;
     private ProgramaChildAdapter adapter;
+    private List<ProgramaChildModel.DataBean>data=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,12 @@ public class ProgramaChild extends AppCompatActivity implements ProgramaChildAda
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View view,int position) {
+        Toast.makeText(ProgramaChild.this, ""+position, Toast.LENGTH_SHORT).show();
+        String uid = data.get(position).getUid();
+        Intent intent = new Intent(this, ProgramaThird.class);
+        intent.putExtra("uid",uid);
+        startActivity(intent);
 
     }
 
@@ -68,7 +76,7 @@ public class ProgramaChild extends AppCompatActivity implements ProgramaChildAda
             public void onSuccess(String result) {
                 Gson gson = new Gson();
                 ProgramaChildModel childModel = gson.fromJson(result, ProgramaChildModel.class);
-                List<ProgramaChildModel.DataBean> data = childModel.getData();
+                data = childModel.getData();
                 if (data!=null) {
                     switch (state){
                         case DOMN:
@@ -77,22 +85,12 @@ public class ProgramaChild extends AppCompatActivity implements ProgramaChildAda
                         case UP:
                             adapter.addRes(data);
                             break;
-
-
-
                     }
-
                 }
-
-
-
             }
-
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
             }
-
             @Override
             public void onCancelled(CancelledException cex) {
 
@@ -116,6 +114,7 @@ public class ProgramaChild extends AppCompatActivity implements ProgramaChildAda
         mRefresh.setLayoutManager(layoutManager);
         adapter = new ProgramaChildAdapter(this);
         mRefresh.setAdapter(adapter);
+        adapter.setListener(this);
         mRefresh.setSwipeEnable(true);
         mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener(){
             @Override

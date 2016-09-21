@@ -14,6 +14,7 @@ import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,9 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
     private List<ProgramaChildModel.DataBean> data;
     private LayoutInflater inflater;
     private ImageOptions options;
+    private ImageOptions options1;
     private OnClickItemListener listener;
+    private RecyclerView mRecyclerView;
 
     public void setListener(OnClickItemListener listener) {
         this.listener = listener;
@@ -38,6 +41,7 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
         data = new ArrayList<>();
         inflater = LayoutInflater.from(context);
         options=new ImageOptions.Builder().setCircular(true).build();
+        options1=new ImageOptions.Builder().setLoadingDrawableId(R.mipmap.live_default).build();
     }
 
     public void updateRes(List<ProgramaChildModel.DataBean> list) {
@@ -51,6 +55,13 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
     }
 
     @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView=recyclerView;
+
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.programa_child_item, parent, false);
         itemView.setOnClickListener(this);
@@ -59,9 +70,19 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        x.image().bind(holder.showImg, data.get(position).getThumb());
+        x.image().bind(holder.showImg, data.get(position).getThumb(),options1);
         x.image().bind(holder.userPic, data.get(position).getAvatar(),options);
-        holder.onLine.setText(data.get(position).getView());
+
+        String num = data.get(position).getView();
+        double d = Double.parseDouble(num);
+        if (d <10000) {
+            holder.onLine.setText(num);
+        }else{
+            DecimalFormat format = new DecimalFormat("#0.0");
+            String formatNum = format.format(d / 10000);
+            holder.onLine.setText(formatNum+"w");
+        }
+
         holder.user.setText(data.get(position).getNick());
         holder.contentName.setText(data.get(position).getTitle());
 
@@ -74,8 +95,9 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
 
     @Override
     public void onClick(View v) {
+        int position = mRecyclerView.getChildAdapterPosition(v);
 
-        listener.onClick(v);
+        listener.onClick(v,position);
     }
 
     static
@@ -99,7 +121,9 @@ public class ProgramaChildAdapter extends RecyclerView.Adapter<ProgramaChildAdap
         }
     }
     public interface OnClickItemListener{
-        void onClick(View view);
+        void onClick(View view,int position);
+
+
     }
 
 

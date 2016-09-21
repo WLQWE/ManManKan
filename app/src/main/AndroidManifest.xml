@@ -21,7 +21,8 @@
         </activity>
         <activity android:name=".ui.BaseActivity" />
         <activity android:name=".ui.PlayerActivity" />
-        <activity android:name=".ui.ProgramaChild"></activity>
+        <activity android:name=".ui.ProgramaChild" />
+        <activity android:name=".ui.ProgramaThird"></activity>
     </application>
 
 </manifest>
