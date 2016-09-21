@@ -6,4 +6,164 @@
 
     tools:context="com.qianfeng.manmankan.ui.PlayerActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+            <!--播放器-->
+<io.vov.vitamio.widget.VideoView
+    android:id="@+id/player_video"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+            <!--垂直控制按钮-->
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="right"
+                android:gravity="center_horizontal"
+                android:background="#00000000"
+                android:visibility="gone"
+                >
+                <Button
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/video_more_btn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/btn_more"
+                    />
+                <CheckBox
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/video_gift"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:button="@null"
+                    android:background="@drawable/btn_gift"
+                    />
+                <CheckBox
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/video_on_off"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:button="@null"
+                    android:background="@drawable/btn_on_of"
+                    />
+                <Button
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/video_full_screen"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/btn_full_screen"
+                    />
+            </LinearLayout>
+            <!--水平控制按钮-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                >
+
+
+            </LinearLayout>
+
+        </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:weightSum="1">
+<ImageView
+    android:id="@+id/room_icon"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:src="@mipmap/ic_launcher"
+
+    />
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:id="@+id/room_name"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/room_content"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+        <LinearLayout
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            >
+        <CheckBox
+            android:id="@+id/room_follow_btn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/btn_follow_selector"
+            android:button="@null"
+             />
+            <TextView
+                android:id="@+id/room_follow_text"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:text="关注"
+                android:textSize="14sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            >
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+        <CheckBox
+            android:id="@+id/room_remind_btn"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+             android:background="@drawable/btn_remind"
+            android:button="@null"
+            />
+                <ImageView
+                    android:id="@+id/room_remind_circle"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@mipmap/remind_circle"
+                    android:layout_gravity="center_vertical"
+                    />
+            </FrameLayout>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="15dp"
+    android:text="开播提醒"
+    android:textSize="14sp"
+    />
+        </LinearLayout>
+    </LinearLayout>
+       <android.support.design.widget.TabLayout
+           android:id="@+id/room_tab"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/room_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+
 </android.support.percent.PercentFrameLayout>
