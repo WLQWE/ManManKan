@@ -55,6 +55,7 @@ public class PlayerActivity extends BaseActivity {
         ButterKnife.bind(this);
         mVideo.setVideoPath("http://flv.quanmin.tv/live/1743331_L3.flv");
         mVideo.start();
+
         getData();
     }
 
