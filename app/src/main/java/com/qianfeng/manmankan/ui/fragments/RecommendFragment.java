@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import com.qianfeng.manmankan.ui.PlayerActivity;
 import com.qianfeng.manmankan.ui.ProgramaChild;
 import com.qianfeng.manmankan.view.CustomRecyclerView;
 import com.qianfeng.manmankan.view.CustomSwipeRefreshLayout;
+import com.qianfeng.manmankan.view.ErrorView;
 import com.squareup.picasso.Picasso;
 
 import org.xutils.common.Callback;
@@ -55,11 +57,15 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     @BindView(R.id.recommend_loading)
     ImageView loading;
 
+    @BindView(R.id.recommend_container)
+    FrameLayout recommendContainer;
+
     BGABanner mHeaderPager;
     RecyclerView mHeaderRecycler;
     private RecommendHeaderAdapter headerAdapter;
     private RecommendAdapter mAdapter;
     private View headerView;
+    private ErrorView errorView;
 
     @Nullable
     @Override
@@ -116,6 +122,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     }
 
     private void setupView(final State state) {
+        recommendContainer.removeView(errorView);
         RequestParams requestParams = new RequestParams(HttpConstants.RECOMMEND);
         x.http().get(requestParams, new Callback.CommonCallback<String>() {
             @Override
@@ -172,6 +179,16 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.e(TAG, "onError: ");
+                loading.setVisibility(View.GONE);
+                errorView = new ErrorView(getContext());
+                errorView.setButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loading.setVisibility(View.VISIBLE);
+                        setupView(State.DOWN);
+                    }
+                });
+                recommendContainer.addView(errorView);
             }
 
             @Override
