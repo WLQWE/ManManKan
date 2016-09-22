@@ -1,5 +1,6 @@
 package com.qianfeng.manmankan.ui;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -21,13 +22,25 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.qianfeng.manmankan.R;
+import com.qianfeng.manmankan.constans.HttpConstants;
+import com.qianfeng.manmankan.model.playermodels.PlayerModel;
 import com.qianfeng.manmankan.utils.LightController;
 import com.qianfeng.manmankan.utils.VolumeController;
+
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,6 +107,8 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     Button mFullSendText;
     @BindView(R.id.full_gift)
     Button mFullGift;
+    @BindView(R.id.definition_list)
+    ListView mDefinitionList;
     private int mScreenHeight;
     private int mScreenWidth;
     //    刚按下时的位置
@@ -108,9 +123,11 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     private int oldHeight;
     private boolean screenGift;
     private PopupWindow popupWindow;
+
     private Button mReport;
     private Button mPopShare;
-
+    private String uid;
+   private DateFormat format;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,9 +139,11 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     }
 
     private void initView() {
+        Intent intent = getIntent();
+        uid = intent.getStringExtra("uid");
 
-        mVideo.setVideoPath("http://flv.quanmin.tv/live/13333_L3.flv");
-        mVideo.start();
+        format=new SimpleDateFormat("MMddHHmm");
+
         mVideo.setOnTouchListener(this);
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
         mScreenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -132,11 +151,42 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         mOnOff.setOnCheckedChangeListener(this);
         mRoomFollowBtn.setOnCheckedChangeListener(this);
         mRoomRemindBtn.setOnCheckedChangeListener(this);
-
         getData();
     }
 
     private void getData() {
+        Date date=new Date();
+        String time=format.format(date);
+        RequestParams params = new RequestParams(HttpConstants.RECOMMEND_VIEWPAGER_START+uid+HttpConstants.RECOMMEND_VIEWPAGER_MIDDLE+time+HttpConstants.RECOMMEND_VIEWPAGER_END);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                if (result==null) {
+                    Log.e(TAG, "onSuccess: "+"result-------空" );
+                }
+                Gson gson = new Gson();
+                PlayerModel playerModel = gson.fromJson(result, PlayerModel.class);
+                String src = playerModel.getRoom_lines().get(0).getHls().getThree().getSrc();
+                mVideo.setVideoPath(src);
+                mVideo.start();
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
     }
 
 
@@ -150,7 +200,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 mStartY = y;
                 mLastX = x;
                 mLastY = y;
-                if (popupWindow!=null) {
+                if (popupWindow != null) {
                     popupWindow.dismiss();
                 }
                 break;
@@ -240,14 +290,13 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     }
 
 
-
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.video_on_off:
                 if (isChecked) {
                     mVideo.pause();
-                }else {
+                } else {
                     mVideo.start();
                 }
 
@@ -308,6 +357,9 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
 
     @OnClick({R.id.full_top_exit, R.id.btn_screen_gift, R.id.btn_screen_definition, R.id.btn_full_shared, R.id.btn_live_exit, R.id.video_more_btn, R.id.video_full_screen, R.id.full_bottom_refresh, R.id.full_hot_text, R.id.full_send_text, R.id.full_gift})
     public void onClick(View view) {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int widthPixels = displayMetrics.widthPixels;
+        int heightPixels = displayMetrics.heightPixels;
         switch (view.getId()) {
             case R.id.full_top_exit:
                 exitFull();
@@ -315,15 +367,16 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
             case R.id.btn_screen_gift:
                 if (screenGift) {
                     mScreenGift.setText("屏蔽礼物");
-                    Toast.makeText(this,"礼物特效已开启",Toast.LENGTH_SHORT).show();
-                    screenGift=false;
-                }else {
+                    Toast.makeText(this, "礼物特效已开启", Toast.LENGTH_SHORT).show();
+                    screenGift = false;
+                } else {
                     mScreenGift.setText("开启礼物");
-                    Toast.makeText(this,"礼物特效已屏蔽",Toast.LENGTH_SHORT).show();
-                    screenGift=true;
+                    Toast.makeText(this, "礼物特效已屏蔽", Toast.LENGTH_SHORT).show();
+                    screenGift = true;
                 }
                 break;
             case R.id.btn_screen_definition:
+                     mDefinitionList.setVisibility(View.VISIBLE);
 
                 break;
             case R.id.btn_full_shared:
@@ -333,26 +386,24 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 finish();
                 break;
             case R.id.video_more_btn:
-                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                int widthPixels = displayMetrics.widthPixels;
-                int heightPixels = displayMetrics.heightPixels;
-                if (popupWindow==null) {
-                View pop= LayoutInflater.from(this).inflate(R.layout.popupwindow_more,null);
+
+                if (popupWindow == null) {
+                    View pop = LayoutInflater.from(this).inflate(R.layout.popupwindow_more, null);
                     mReport = (Button) pop.findViewById(R.id.pop_report);
                     mPopShare = (Button) pop.findViewById(R.id.pop_share);
                     mReport.setOnClickListener(this);
                     mPopShare.setOnClickListener(this);
-                    popupWindow=new PopupWindow(pop);
-                    popupWindow.setWidth(widthPixels/5);
-                    popupWindow.setHeight(heightPixels/9);
+                    popupWindow = new PopupWindow(pop);
+                    popupWindow.setWidth(widthPixels / 5);
+                    popupWindow.setHeight(heightPixels / 9);
 
                 }
                 if (popupWindow.isShowing()) {
                     // 如果显示状态 就隐藏
                     popupWindow.dismiss();
-                }else{
+                } else {
 //            popupWindow.showAsDropDown(view,widthPixels / 6,0);
-                    popupWindow.showAtLocation(view, Gravity.RIGHT|Gravity.TOP,50,60);
+                    popupWindow.showAtLocation(view, Gravity.RIGHT | Gravity.TOP, 50, 60);
                 }
 
                 break;
@@ -386,10 +437,10 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
 
                 break;
             case R.id.pop_report:
-                Toast.makeText(this,"已举报",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "已举报", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.pop_share:
-                Toast.makeText(this,"已分享",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "已分享", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
