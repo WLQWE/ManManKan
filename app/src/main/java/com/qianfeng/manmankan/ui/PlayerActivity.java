@@ -64,6 +64,10 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     LinearLayout mControl;
     @BindView(R.id.player_bottom)
     LinearLayout mPlayerBottom;
+    @BindView(R.id.full_bottom_control)
+    LinearLayout mFullBottomControl;
+    @BindView(R.id.full_top_control)
+    LinearLayout mFullTopControl;
     private int mScreenHeight;
     private int mScreenWidth;
     //    刚按下时的位置
@@ -86,7 +90,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     }
 
     private void initView() {
-        mVideo.setVideoPath("http://flv.quanmin.tv/live/18_L3.flv");
+        mVideo.setVideoPath("http://flv.quanmin.tv/live/13333_L3.flv");
         mVideo.start();
         mVideo.setOnTouchListener(this);
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
@@ -150,27 +154,50 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 mLastY = y;
                 break;
             case MotionEvent.ACTION_UP:
-                if(!isLandscape) {
+
                     if (Math.abs(x - mStartX) < threshold && Math.abs(y - mStartY) < threshold) {
-                        showOrHideController();
+                        if (!isLandscape) {
+                            showOrHideController();
+                        }else {
+                            horizontalShowOrHideController();
+                        }
                     }
-                }
+
                 break;
         }
         return true;
     }
 
+    private void horizontalShowOrHideController() {
+        if (mFullTopControl.getVisibility() == View.VISIBLE) {
+            mFullTopControl.setVisibility(View.GONE);
+            mFullBottomControl.setVisibility(View.GONE);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.controller_exit);
+            Animation animationTop = AnimationUtils.loadAnimation(this, R.anim.top_control_exit);
+            mFullBottomControl.startAnimation(animation);
+            mFullTopControl.startAnimation(animationTop);
+        } else if (mFullTopControl.getVisibility() == View.GONE) {
+            mFullTopControl.setVisibility(View.VISIBLE);
+            mFullBottomControl.setVisibility(View.VISIBLE);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.controller);
+            Animation animationTop = AnimationUtils.loadAnimation(this, R.anim.top_control);
+            mFullBottomControl.startAnimation(animation);
+            mFullTopControl.startAnimation(animationTop);
+
+        }
+    }
     private void showOrHideController() {
         if (mControl.getVisibility() == View.VISIBLE) {
             mControl.setVisibility(View.GONE);
-            Animation animation = AnimationUtils.loadAnimation(this, R.anim.controller_exit);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.vertical_control_exit);
             mControl.startAnimation(animation);
         } else if (mControl.getVisibility() == View.GONE) {
             mControl.setVisibility(View.VISIBLE);
-            Animation animation = AnimationUtils.loadAnimation(this, R.anim.controller);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.vertical_control);
             mControl.startAnimation(animation);
         }
     }
+
 
     @OnClick({R.id.video_more_btn, R.id.video_full_screen})
     public void onClick(View view) {
@@ -179,17 +206,19 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
 
                 break;
             case R.id.video_full_screen:
-                       mPlayerBottom.setVisibility(View.GONE);
-                        mControl.setVisibility(View.GONE);
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                mPlayerBottom.setVisibility(View.GONE);
+                mControl.setVisibility(View.GONE);
+                mFullTopControl.setVisibility(View.VISIBLE);
+                mFullBottomControl.setVisibility(View.VISIBLE);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //                旋转屏幕
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    ViewGroup.LayoutParams layoutParams = mVideo.getLayoutParams();
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                ViewGroup.LayoutParams layoutParams = mVideo.getLayoutParams();
 
                 layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                layoutParams.width=mScreenHeight;
+                layoutParams.width = mScreenHeight;
                 mVideo.setLayoutParams(layoutParams);
-                isLandscape=true;
+                isLandscape = true;
                 break;
         }
     }
@@ -204,7 +233,11 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
 
                 break;
             case R.id.room_follow_btn:
-
+                if (isChecked) {
+                    mRoomFollowText.setText("已关注");
+                } else {
+                    mRoomFollowText.setText("关注");
+                }
                 break;
             case R.id.room_remind_btn:
                 if (isChecked) {
@@ -216,7 +249,8 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                     right.setDuration(100);
                     right.setFillAfter(true);
                     mRoomRemindCircle.startAnimation(right);
-                }else {
+                    mRoomFollowBtn.setChecked(true);
+                } else {
                     TranslateAnimation left = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF,
                             1, TranslateAnimation.RELATIVE_TO_SELF, 0
                             , TranslateAnimation.RELATIVE_TO_SELF, 0, TranslateAnimation.RELATIVE_TO_SELF

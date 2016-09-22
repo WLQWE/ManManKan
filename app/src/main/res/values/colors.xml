@@ -10,4 +10,6 @@
     <color name="black">#000000</color>
     <color name="tm_black">#99000000</color>
     <color name="tm_white">#11ffffff</color>
+    <color name="btn_gift">#0b0704</color>
+    <color name="btn_gift_pressed">#66999999</color>
 </resources>
