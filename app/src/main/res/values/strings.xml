@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ManManKan</string>
+    <item name="tag_one" type="id"/>
+    <item name="tag_two" type="id"/>
+    <item name="view_tag_one" type="id"/>
+    <item name="view_tag_two" type="id"/>
 </resources>

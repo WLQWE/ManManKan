@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical">
 
     <cn.bingoogolapple.bgabanner.BGABanner
@@ -10,10 +10,16 @@
         style="@style/BannerDefaultStyle"
         app:banner_transitionEffect="zoomStack"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recommend_header_recycler"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="100dp"/>
+        android:layout_height="100dp"
+        app:cardElevation="1dp"
+        android:layout_marginBottom="1dp">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recommend_header_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
+    </android.support.v7.widget.CardView>
 </LinearLayout>
