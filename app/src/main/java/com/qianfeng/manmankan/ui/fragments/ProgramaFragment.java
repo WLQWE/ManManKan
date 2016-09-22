@@ -1,6 +1,7 @@
 package com.qianfeng.manmankan.ui.fragments;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -37,6 +39,8 @@ import butterknife.ButterKnife;
 public class ProgramaFragment extends BaseFragment implements AdapterView.OnItemClickListener {
     @BindView(R.id.programa_loading)
     ImageView programaLoading;
+    @BindView(R.id.programa_framlayout)
+    FrameLayout programaFramlayout;
     private List<ProgramaModel> list;
     public static final String TAG = ProgramaFragment.class.getSimpleName();
     @BindView(R.id.programa_gridview)
@@ -65,6 +69,7 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
         try {
             models = dbManager.selector(ProgramaModel.class).findAll();
             if (models != null && models.size() != 0) {
+                programaLoading.setVisibility(View.GONE);
                 adapter.updateRes(models);
             } else {
                 getModelsFromNet();
@@ -85,6 +90,11 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
         adapter = new ProgramaAdapter(getContext());
         mGridView.setAdapter(adapter);
         mGridView.setOnItemClickListener(this);
+        AnimationDrawable drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.home_loading);
+        programaLoading.setBackgroundDrawable(drawable);
+        if (drawable != null) {
+            drawable.start();
+        }
 
     }
 
@@ -94,6 +104,7 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
         Intent intent = new Intent(getContext(), ProgramaChild.class);
 
         if (models != null & models.size() > 0) {
+
             intent.putExtra("slug", models.get(position).getSlug());
             intent.putExtra("name", models.get(position).getName());
         } else {
@@ -110,11 +121,13 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
 
             @Override
             public void onSuccess(String result) {
+                programaLoading.setVisibility(View.GONE);
                 Gson gson = new Gson();
                 list = gson.fromJson(result, new TypeToken<List<ProgramaModel>>() {
                 }.getType());
                 if (list != null) {
                     adapter.updateRes(list);
+
                 }
                 //缓存数据
                 DbManager db = x.getDb(daoConfig);
@@ -130,6 +143,7 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.e(TAG, "onSuccess");
+                programaLoading.setVisibility(View.GONE);
             }
 
             @Override

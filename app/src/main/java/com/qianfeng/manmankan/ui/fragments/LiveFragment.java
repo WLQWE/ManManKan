@@ -1,22 +1,22 @@
 package com.qianfeng.manmankan.ui.fragments;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
 import com.qianfeng.manmankan.R;
-import com.qianfeng.manmankan.adapters.ProgramaAdapter;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
-import com.qianfeng.manmankan.model.programas.ProgramaModel;
-import com.qianfeng.manmankan.ui.ProgramaChild;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -35,6 +35,8 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
     public static final String TAG = LiveFragment.class.getSimpleName();
     @BindView(R.id.live_recyclerview)
     PullToRefreshRecyclerView mRefresh;
+    @BindView(R.id.live_loading)
+    ImageView liveLoading;
     private ProgramaChildAdapter adapter;
 
     @Nullable
@@ -44,9 +46,11 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
         layout = inflater.inflate(R.layout.live_fragment, container, false);
 
 
+        ButterKnife.bind(this, layout);
         return layout;
     }
-    public enum State{DOWN,UP}
+
+    public enum State {DOWN, UP}
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -55,7 +59,7 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
         setupView(State.DOWN);
     }
 
-    private void setupView(final  State state) {
+    private void setupView(final State state) {
         String path = HttpConstants.LIVE_START + HttpConstants.LIVE_END;
         RequestParams params = new RequestParams(path);
         x.http().get(params, new Callback.CommonCallback<String>() {
@@ -63,11 +67,12 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
 
             @Override
             public void onSuccess(String result) {
+                liveLoading.setVisibility(View.GONE);
                 Gson gson = new Gson();
                 ProgramaChildModel child = gson.fromJson(result, ProgramaChildModel.class);
                 data = child.getData();
-                if (data!=null) {
-                    switch (state){
+                if (data != null) {
+                    switch (state) {
                         case DOWN:
                             adapter.updateRes(data);
                             break;
@@ -101,9 +106,8 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
 
     @Override
     public void onClick(View view, int position) {
-        Toast.makeText(getContext(), "老"+position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "老" + position, Toast.LENGTH_SHORT).show();
     }
-
 
 
     private void initView() {
@@ -114,19 +118,24 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
         adapter.setListener(this);
         mRefresh.setAdapter(adapter);
         mRefresh.setSwipeEnable(true);
-        mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener(){
+        mRefresh.setPagingableListener(new PullToRefreshRecyclerView.PagingableListener() {
             @Override
             public void onLoadMoreItems() {
                 setupView(State.UP);
             }
 
         });
-        mRefresh.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener(){
+        mRefresh.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 setupView(State.DOWN);
             }
         });
+        AnimationDrawable drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.home_loading);
+        liveLoading.setBackgroundDrawable(drawable);
+        if (drawable != null) {
+            drawable.start();
+        }
 
     }
 }

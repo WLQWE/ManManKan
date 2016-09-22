@@ -1,6 +1,7 @@
 package com.qianfeng.manmankan.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -36,6 +37,8 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     PullToRefreshRecyclerView mRefresh;
     @BindView(R.id.programa_child_back)
     ImageView mBack;
+    @BindView(R.id.programa_child_loading)
+    ImageView programaChildLoading;
     private ProgramaChildAdapter adapter;
     private List<ProgramaChildModel.DataBean> data = new ArrayList<>();
 
@@ -57,7 +60,8 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
         startActivity(intent);
 
     }
-//
+
+    //
     @Override
     public void onClick(View v) {
         finish();
@@ -78,6 +82,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
+                programaChildLoading.setVisibility(View.GONE);
                 Gson gson = new Gson();
                 ProgramaChildModel childModel = gson.fromJson(result, ProgramaChildModel.class);
                 data = childModel.getData();
@@ -95,6 +100,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+
             }
 
             @Override
@@ -135,6 +141,11 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
             }
         });
         mBack.setOnClickListener(this);
+        AnimationDrawable drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.home_loading);
+        programaChildLoading.setBackgroundDrawable(drawable);
+        if (drawable != null) {
+            drawable.start();
+        }
 
     }
 }
