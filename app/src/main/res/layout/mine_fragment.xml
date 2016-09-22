@@ -2,7 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/colorPrimaryDark"
               android:orientation="vertical">
+    <FrameLayout
+        android:background="#b43a3a"
+        android:layout_width="match_parent"
+        android:layout_height="240dp">
+        <ImageView
+            android:layout_margin="30dp"
+            android:id="@+id/mine_talk"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@mipmap/message"/>
+        <ImageView
+            android:layout_margin="30dp"
+            android:layout_gravity="right"
+            android:id="@+id/mine_set"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@mipmap/setting"
+            />
+        <ImageView
+
+            android:layout_gravity="center"
+            android:id="@+id/mine_userpic"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@mipmap/img_profile_touxiang_default_unknow"/>
+        <TextView
+            android:textColor="#f1e5e5"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="60dp"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户登录"/>
+
+    </FrameLayout>
+    <ListView
+        android:id="@+id/mine_llistview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

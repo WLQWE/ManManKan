@@ -16,7 +16,7 @@
                 android:id="@+id/programa_child_showimg"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:src="@mipmap/live_default"/>
+                android:src="@mipmap/ic_launcher"/>
             <LinearLayout
                 android:layout_margin="10dp"
                 android:background="#707b7272"
