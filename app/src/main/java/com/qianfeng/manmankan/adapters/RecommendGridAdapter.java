@@ -78,7 +78,7 @@ public class RecommendGridAdapter extends BaseAdapter implements View.OnClickLis
         if (flag) {
             return 2;
         }
-        return 4;
+        return data.size();
     }
 
     @Override

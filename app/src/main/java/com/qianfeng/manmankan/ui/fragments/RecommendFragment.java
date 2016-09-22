@@ -1,6 +1,7 @@
 package com.qianfeng.manmankan.ui.fragments;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,6 +25,9 @@ import com.qianfeng.manmankan.model.recommends.Index;
 import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.model.recommends.Recommends;
 import com.qianfeng.manmankan.ui.PlayerActivity;
+import com.qianfeng.manmankan.ui.ProgramaChild;
+import com.qianfeng.manmankan.view.CustomRecyclerView;
+import com.qianfeng.manmankan.view.CustomSwipeRefreshLayout;
 import com.squareup.picasso.Picasso;
 
 import org.xutils.common.Callback;
@@ -41,17 +45,21 @@ import cn.bingoogolapple.bgabanner.BGABanner;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter, RecommendHeaderAdapter.OnItemClickListener {
+public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter, RecommendHeaderAdapter.OnItemClickListener, CustomSwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = RecommendFragment.class.getSimpleName();
 
     @BindView(R.id.recommend_recycler)
-    PullToRefreshRecyclerView recommendRecycler;
+    CustomRecyclerView recommendRecycler;
+
+    @BindView(R.id.recommend_loading)
+    ImageView loading;
 
     BGABanner mHeaderPager;
     RecyclerView mHeaderRecycler;
     private RecommendHeaderAdapter headerAdapter;
     private RecommendAdapter mAdapter;
+    private View headerView;
 
     @Nullable
     @Override
@@ -72,13 +80,16 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
 
     private void initView() {
         ButterKnife.bind(this, layout);
-        View headerView = View.inflate(getContext(), R.layout.recommend_header, null);
+        headerView = View.inflate(getContext(), R.layout.recommend_header, null);
+        headerView.setVisibility(View.INVISIBLE);
         mHeaderPager = (BGABanner) headerView.findViewById(R.id.recommend_header_pager);
         mHeaderRecycler = (RecyclerView) headerView.findViewById(R.id.recommend_header_recycler);
         mHeaderPager.setOnItemClickListener(this);
         recommendRecycler.addHeaderView(headerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recommendRecycler.setLayoutManager(layoutManager);
+        //开启刷新
+        recommendRecycler.setSwipeEnable(true);
         //设置上拉加载
         recommendRecycler.setPagingableListener(this);
         //设置下拉刷新
@@ -94,15 +105,24 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
         //
         mAdapter = new RecommendAdapter(getContext());
         recommendRecycler.setAdapter(mAdapter);
+        recommendRecycler.onFinishLoading(true, false);
 
+        //设置动画
+        AnimationDrawable drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.home_loading);
+        loading.setBackgroundDrawable(drawable);
+        if (drawable != null) {
+            drawable.start();
+        }
     }
 
-    private void setupView(State state) {
+    private void setupView(final State state) {
         RequestParams requestParams = new RequestParams(HttpConstants.RECOMMEND);
         x.http().get(requestParams, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 Log.e(TAG, "onSuccess: ");
+                loading.setVisibility(View.GONE);
+                headerView.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
                 Recommends recommends = gson.fromJson(result, Recommends.class);
                 List<String> tips = new ArrayList<>();
@@ -115,8 +135,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                         datas.add(index);
                     }
                 }
-                mHeaderPager.setData(datas, tips);
-                headerAdapter.updateRes(recommends.getClassifications());
+
                 List<List<Recommendation>> data = new ArrayList<>();
                 data.add(recommends.getRecommendations());
                 data.add(recommends.getLols());
@@ -134,8 +153,20 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                 data.add(recommends.getWebgames());
                 data.add(recommends.getDnfs());
                 data.add(recommends.getMinecrafts());
-                mAdapter.updateRes(data, recommends.getLists());
+                switch (state) {
+                    case DOWN:
+                        //为轮播图设置数据
+                        mHeaderPager.setData(datas, tips);
+                        //为头布局的RecyclerView更新数据
+                        headerAdapter.updateRes(recommends.getClassifications());
+                        //RecyclerView更新数据
+                        mAdapter.updateRes(data, recommends.getLists());
 
+                        break;
+                    case UP:
+
+                        break;
+                }
             }
 
             @Override
@@ -180,7 +211,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     //下拉刷新
     @Override
     public void onRefresh() {
-
+        setupView(State.DOWN);
     }
 
     //轮播图的点击监听
@@ -193,9 +224,10 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
 
     //头布局RecyclerView的点击监听
     @Override
-    public void OnItemClick(String classification) {
-        Intent intent = new Intent(getActivity(), PlayerActivity.class);
-        intent.putExtra("classification", classification);
+    public void OnItemClick(String classification, String title) {
+        Intent intent = new Intent(getActivity(), ProgramaChild.class);
+        intent.putExtra("slug", classification);
+        intent.putExtra("name", title);
         getContext().startActivity(intent);
     }
 }
