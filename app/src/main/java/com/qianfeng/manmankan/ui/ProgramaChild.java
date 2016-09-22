@@ -57,7 +57,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
         startActivity(intent);
 
     }
-
+//
     @Override
     public void onClick(View v) {
         finish();
