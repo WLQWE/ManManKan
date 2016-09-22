@@ -13,5 +13,9 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:src="@mipmap/compony_logo"/>
+        <com.lhh.ptrrv.library.PullToRefreshRecyclerView
+            android:id="@+id/live_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </LinearLayout>

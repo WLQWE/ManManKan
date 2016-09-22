@@ -58,11 +58,8 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
 
             @Override
             public void onSuccess(String result) {
-                Log.e(TAG,"onSuccess");
-                Log.e(TAG,result);
                 Gson gson = new Gson();
                list= gson.fromJson(result, new TypeToken<List<ProgramaModel>>() {}.getType());
-                Log.e(TAG,list.size()+"");
                 if (list!=null) {
                     adapter.updateRes(list);
                 }
