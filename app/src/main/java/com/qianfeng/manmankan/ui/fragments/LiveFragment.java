@@ -65,6 +65,8 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
     }
 
     private void setupView(final State state) {
+        mRefresh.setVisibility(View.VISIBLE);
+        liveFramlayout.removeView(errorView);
         String path = HttpConstants.LIVE_START + HttpConstants.LIVE_END;
         RequestParams params = new RequestParams(path);
         x.http().get(params, new Callback.CommonCallback<String>() {
@@ -91,6 +93,7 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                mRefresh.setVisibility(View.GONE);
                 liveLoading.setVisibility(View.GONE);
                 errorView=new ErrorView(getContext());
                 errorView.setButtonListener(new View.OnClickListener() {

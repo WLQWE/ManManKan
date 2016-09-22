@@ -75,7 +75,8 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     public enum State {DOMN, UP}
 
     private void setupView(final State state) {
-        programaChildFramlayout.addView(errorView);
+        programaChildFramlayout.removeView(errorView);
+        mRefresh.setVisibility(View.VISIBLE);
         Intent intent = getIntent();
         String slug = intent.getStringExtra("slug");
         String name = intent.getStringExtra("name");
@@ -105,6 +106,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                mRefresh.setVisibility(View.GONE);
                 programaChildLoading.setVisibility(View.GONE);
                 errorView = new ErrorView(ProgramaChild.this);
                 errorView.setButtonListener(new View.OnClickListener() {
