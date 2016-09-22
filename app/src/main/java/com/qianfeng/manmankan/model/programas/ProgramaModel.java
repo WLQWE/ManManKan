@@ -1,8 +1,12 @@
 package com.qianfeng.manmankan.model.programas;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
 /**
  * Created by Administrator on 2016/9/20.
  */
+@Table(name="models")
 public class ProgramaModel {
 
     /**
@@ -17,14 +21,18 @@ public class ProgramaModel {
      * priority : 4
      * screen : 0
      */
-
+    @Column(name = "id",isId = true,autoGen = false)
     private int id;
+    @Column(name="name")
     private String name;
+    @Column(name="slug")
     private String slug;
+
     private String first_letter;
     private int status;
     private int prompt;
     private String image;
+    @Column(name="thumb")
     private String thumb;
     private int priority;
     private int screen;

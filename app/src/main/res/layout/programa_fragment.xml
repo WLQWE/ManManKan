@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <TextView
         android:id="@+id/programa_title"
         android:layout_width="match_parent"
@@ -11,11 +12,22 @@
         android:src="@mipmap/compony_logo"
         android:text="栏目"
         android:textSize="20sp"
-        android:textStyle="bold"/>
-    <GridView
-        android:id="@+id/programa_gridview"
-        android:numColumns="3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:textStyle="bold" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <GridView
+            android:id="@+id/programa_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="3" />
+
+        <ImageView
+            android:id="@+id/programa_loading"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </LinearLayout>

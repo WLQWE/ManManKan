@@ -24,9 +24,18 @@
             android:layout_height="40dp"
             android:src="@mipmap/btn_back_pressed"/>
     </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <com.lhh.ptrrv.library.PullToRefreshRecyclerView
         android:id="@+id/programa_child_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+        <ImageView
+            android:id="@+id/programa_child_loading"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </LinearLayout>
