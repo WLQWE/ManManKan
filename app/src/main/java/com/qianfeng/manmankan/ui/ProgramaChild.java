@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
+import com.qianfeng.manmankan.view.ErrorView;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -39,8 +41,11 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     ImageView mBack;
     @BindView(R.id.programa_child_loading)
     ImageView programaChildLoading;
+    @BindView(R.id.programa_child_framlayout)
+    FrameLayout programaChildFramlayout;
     private ProgramaChildAdapter adapter;
     private List<ProgramaChildModel.DataBean> data = new ArrayList<>();
+    private ErrorView errorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +75,7 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
     public enum State {DOMN, UP}
 
     private void setupView(final State state) {
-
+        programaChildFramlayout.addView(errorView);
         Intent intent = getIntent();
         String slug = intent.getStringExtra("slug");
         String name = intent.getStringExtra("name");
@@ -100,7 +105,18 @@ public class ProgramaChild extends BaseActivity implements ProgramaChildAdapter.
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                programaChildLoading.setVisibility(View.GONE);
+                errorView = new ErrorView(ProgramaChild.this);
+                errorView.setButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    programaChildLoading.setVisibility(View.VISIBLE);
+                        setupView(State.DOMN);
 
+                    }
+                });
+
+                programaChildFramlayout.addView(errorView);
             }
 
             @Override

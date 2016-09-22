@@ -21,6 +21,7 @@ import com.qianfeng.manmankan.adapters.ProgramaAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaModel;
 import com.qianfeng.manmankan.ui.ProgramaChild;
+import com.qianfeng.manmankan.view.ErrorView;
 
 import org.xutils.DbManager;
 import org.xutils.common.Callback;
@@ -48,6 +49,7 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
     private ProgramaAdapter adapter;
     private DbManager.DaoConfig daoConfig = new DbManager.DaoConfig().setDbName("programamodel").setDbVersion(1);
     private List<ProgramaModel> models;
+    private ErrorView errorView;
 
     @Nullable
     @Override
@@ -96,6 +98,7 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
             drawable.start();
         }
 
+
     }
 
     @Override
@@ -116,8 +119,11 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
     }
 
     public void getModelsFromNet() {
+        programaFramlayout.removeView(errorView);
         RequestParams params = new RequestParams(HttpConstants.PROGRAMA);
         x.http().get(params, new Callback.CommonCallback<String>() {
+
+
 
             @Override
             public void onSuccess(String result) {
@@ -144,6 +150,16 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.e(TAG, "onSuccess");
                 programaLoading.setVisibility(View.GONE);
+                errorView = new ErrorView(getContext());
+                errorView.setButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        programaLoading.setVisibility(View.VISIBLE);
+                        getModelsFromNet();
+
+                    }
+                });
+                programaFramlayout.addView(errorView);
             }
 
             @Override

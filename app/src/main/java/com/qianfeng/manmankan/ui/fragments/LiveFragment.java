@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
+import com.qianfeng.manmankan.view.ErrorView;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -37,7 +39,10 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
     PullToRefreshRecyclerView mRefresh;
     @BindView(R.id.live_loading)
     ImageView liveLoading;
+    @BindView(R.id.live_framlayout)
+    FrameLayout liveFramlayout;
     private ProgramaChildAdapter adapter;
+    private ErrorView errorView;
 
     @Nullable
     @Override
@@ -86,7 +91,16 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                liveLoading.setVisibility(View.GONE);
+                errorView=new ErrorView(getContext());
+                errorView.setButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        liveLoading.setVisibility(View.VISIBLE);
+                        setupView(State.DOWN);
+                    }
+                });
+                liveFramlayout.addView(errorView);
             }
 
             @Override

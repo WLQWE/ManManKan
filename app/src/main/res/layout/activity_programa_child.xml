@@ -25,6 +25,7 @@
             android:src="@mipmap/btn_back_pressed"/>
     </FrameLayout>
     <FrameLayout
+        android:id="@+id/programa_child_framlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <com.lhh.ptrrv.library.PullToRefreshRecyclerView
