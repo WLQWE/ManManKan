@@ -4,7 +4,11 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +21,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.utils.LightController;
@@ -29,7 +35,7 @@ import butterknife.OnClick;
 import io.vov.vitamio.Vitamio;
 import io.vov.vitamio.widget.VideoView;
 
-public class PlayerActivity extends BaseActivity implements View.OnTouchListener, CompoundButton.OnCheckedChangeListener {
+public class PlayerActivity extends BaseActivity implements View.OnTouchListener, CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private static final String TAG = PlayerActivity.class.getSimpleName();
     @BindView(R.id.player_video)
@@ -68,6 +74,26 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     LinearLayout mFullBottomControl;
     @BindView(R.id.full_top_control)
     LinearLayout mFullTopControl;
+    @BindView(R.id.player_vertical_controller_left)
+    LinearLayout mControllerLeft;
+    @BindView(R.id.full_top_exit)
+    Button mFullTopExit;
+    @BindView(R.id.btn_screen_gift)
+    Button mScreenGift;
+    @BindView(R.id.btn_screen_definition)
+    Button mScreenDefinition;
+    @BindView(R.id.btn_full_shared)
+    Button mFullShared;
+    @BindView(R.id.btn_live_exit)
+    Button btnLiveExit;
+    @BindView(R.id.full_bottom_refresh)
+    Button mFullBottomRefresh;
+    @BindView(R.id.full_hot_text)
+    Button mFullHotText;
+    @BindView(R.id.full_send_text)
+    Button mFullSendText;
+    @BindView(R.id.full_gift)
+    Button mFullGift;
     private int mScreenHeight;
     private int mScreenWidth;
     //    刚按下时的位置
@@ -78,6 +104,12 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     private float mLastY;
     private boolean isLandscape;
     private float threshold = 10;
+    private boolean isFull;
+    private int oldHeight;
+    private boolean screenGift;
+    private PopupWindow popupWindow;
+    private Button mReport;
+    private Button mPopShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +122,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     }
 
     private void initView() {
+
         mVideo.setVideoPath("http://flv.quanmin.tv/live/13333_L3.flv");
         mVideo.start();
         mVideo.setOnTouchListener(this);
@@ -117,6 +150,9 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 mStartY = y;
                 mLastX = x;
                 mLastY = y;
+                if (popupWindow!=null) {
+                    popupWindow.dismiss();
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isLandscape) {
@@ -155,13 +191,13 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
             case MotionEvent.ACTION_UP:
 
-                    if (Math.abs(x - mStartX) < threshold && Math.abs(y - mStartY) < threshold) {
-                        if (!isLandscape) {
-                            showOrHideController();
-                        }else {
-                            horizontalShowOrHideController();
-                        }
+                if (Math.abs(x - mStartX) < threshold && Math.abs(y - mStartY) < threshold) {
+                    if (!isLandscape) {
+                        showOrHideController();
+                    } else {
+                        horizontalShowOrHideController();
                     }
+                }
 
                 break;
         }
@@ -186,47 +222,34 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
 
         }
     }
+
     private void showOrHideController() {
         if (mControl.getVisibility() == View.VISIBLE) {
             mControl.setVisibility(View.GONE);
-            Animation animation = AnimationUtils.loadAnimation(this, R.anim.vertical_control_exit);
-            mControl.startAnimation(animation);
+            mControllerLeft.setVisibility(View.GONE);
+//            Animation animation = AnimationUtils.loadAnimation(this, R.anim.vertical_control_exit);
+//            mControl.startAnimation(animation);
+//            mControllerLeft.startAnimation(animation);
         } else if (mControl.getVisibility() == View.GONE) {
             mControl.setVisibility(View.VISIBLE);
+            mControllerLeft.setVisibility(View.VISIBLE);
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.vertical_control);
             mControl.startAnimation(animation);
+            mControllerLeft.startAnimation(animation);
         }
     }
 
 
-    @OnClick({R.id.video_more_btn, R.id.video_full_screen})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.video_more_btn:
-
-                break;
-            case R.id.video_full_screen:
-                mPlayerBottom.setVisibility(View.GONE);
-                mControl.setVisibility(View.GONE);
-                mFullTopControl.setVisibility(View.VISIBLE);
-                mFullBottomControl.setVisibility(View.VISIBLE);
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                旋转屏幕
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                ViewGroup.LayoutParams layoutParams = mVideo.getLayoutParams();
-
-                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                layoutParams.width = mScreenHeight;
-                mVideo.setLayoutParams(layoutParams);
-                isLandscape = true;
-                break;
-        }
-    }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.video_on_off:
+                if (isChecked) {
+                    mVideo.pause();
+                }else {
+                    mVideo.start();
+                }
 
                 break;
             case R.id.video_gift:
@@ -241,11 +264,9 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
             case R.id.room_remind_btn:
                 if (isChecked) {
-
                     TranslateAnimation right = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF,
                             0, TranslateAnimation.RELATIVE_TO_SELF, 1
-                            , TranslateAnimation.RELATIVE_TO_SELF, 0, TranslateAnimation.RELATIVE_TO_SELF
-                            , 0);
+                            , TranslateAnimation.RELATIVE_TO_SELF, 0, TranslateAnimation.RELATIVE_TO_SELF, 0);
                     right.setDuration(100);
                     right.setFillAfter(true);
                     mRoomRemindCircle.startAnimation(right);
@@ -253,12 +274,122 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 } else {
                     TranslateAnimation left = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF,
                             1, TranslateAnimation.RELATIVE_TO_SELF, 0
-                            , TranslateAnimation.RELATIVE_TO_SELF, 0, TranslateAnimation.RELATIVE_TO_SELF
-                            , 0);
+                            , TranslateAnimation.RELATIVE_TO_SELF, 0, TranslateAnimation.RELATIVE_TO_SELF, 0);
                     left.setDuration(100);
                     left.setFillAfter(true);
                     mRoomRemindCircle.startAnimation(left);
                 }
+                break;
+        }
+    }
+
+    private void exitFull() {
+        horizontalShowOrHideController();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ViewGroup.LayoutParams params = mVideo.getLayoutParams();
+        params.height = oldHeight;
+        mVideo.setLayoutParams(params);
+        isFull = false;
+        isLandscape = false;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (isFull) {
+                exitFull();
+            } else {
+                finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @OnClick({R.id.full_top_exit, R.id.btn_screen_gift, R.id.btn_screen_definition, R.id.btn_full_shared, R.id.btn_live_exit, R.id.video_more_btn, R.id.video_full_screen, R.id.full_bottom_refresh, R.id.full_hot_text, R.id.full_send_text, R.id.full_gift})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.full_top_exit:
+                exitFull();
+                break;
+            case R.id.btn_screen_gift:
+                if (screenGift) {
+                    mScreenGift.setText("屏蔽礼物");
+                    Toast.makeText(this,"礼物特效已开启",Toast.LENGTH_SHORT).show();
+                    screenGift=false;
+                }else {
+                    mScreenGift.setText("开启礼物");
+                    Toast.makeText(this,"礼物特效已屏蔽",Toast.LENGTH_SHORT).show();
+                    screenGift=true;
+                }
+                break;
+            case R.id.btn_screen_definition:
+
+                break;
+            case R.id.btn_full_shared:
+
+                break;
+            case R.id.btn_live_exit:
+                finish();
+                break;
+            case R.id.video_more_btn:
+                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                int widthPixels = displayMetrics.widthPixels;
+                int heightPixels = displayMetrics.heightPixels;
+                if (popupWindow==null) {
+                View pop= LayoutInflater.from(this).inflate(R.layout.popupwindow_more,null);
+                    mReport = (Button) pop.findViewById(R.id.pop_report);
+                    mPopShare = (Button) pop.findViewById(R.id.pop_share);
+                    mReport.setOnClickListener(this);
+                    mPopShare.setOnClickListener(this);
+                    popupWindow=new PopupWindow(pop);
+                    popupWindow.setWidth(widthPixels/5);
+                    popupWindow.setHeight(heightPixels/9);
+
+                }
+                if (popupWindow.isShowing()) {
+                    // 如果显示状态 就隐藏
+                    popupWindow.dismiss();
+                }else{
+//            popupWindow.showAsDropDown(view,widthPixels / 6,0);
+                    popupWindow.showAtLocation(view, Gravity.RIGHT|Gravity.TOP,50,60);
+                }
+
+                break;
+            case R.id.video_full_screen:
+                mPlayerBottom.setVisibility(View.GONE);
+                mControllerLeft.setVisibility(View.GONE);
+                mControl.setVisibility(View.GONE);
+                mFullTopControl.setVisibility(View.VISIBLE);
+                mFullBottomControl.setVisibility(View.VISIBLE);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                旋转屏幕
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                ViewGroup.LayoutParams layoutParams = mVideo.getLayoutParams();
+                oldHeight = layoutParams.height;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.width = mScreenHeight;
+                mVideo.setLayoutParams(layoutParams);
+                isLandscape = true;
+                isFull = true;
+                break;
+            case R.id.full_bottom_refresh:
+
+                break;
+            case R.id.full_hot_text:
+
+                break;
+            case R.id.full_send_text:
+
+                break;
+            case R.id.full_gift:
+
+                break;
+            case R.id.pop_report:
+                Toast.makeText(this,"已举报",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.pop_share:
+                Toast.makeText(this,"已分享",Toast.LENGTH_SHORT).show();
                 break;
         }
     }

@@ -24,7 +24,7 @@
 <com.qianfeng.manmankan.ui.widget.CustomVideoView
     android:id="@+id/player_video"
     android:layout_width="match_parent"
-    android:layout_height="225dp"
+    android:layout_height="250dp"
     android:layout_gravity="center"
     />
             <!--水平控制顶部-->
@@ -80,19 +80,60 @@
                      android:background="@drawable/btn_full_shared"
                     />
             </LinearLayout>
+<!--垂直控制按钮左-->
+            <LinearLayout
+                android:id="@+id/player_vertical_controller_left"
+                android:layout_width="40dp"
+                android:layout_height="220dp"
+                android:orientation="vertical"
+                android:layout_gravity="left"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="10dp"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                >
+                <Button
+
+                    android:id="@+id/btn_live_exit"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="top"
+                    android:background="@drawable/btn_live_exit"
+                    />
+                <LinearLayout
+
+                    android:layout_marginTop="150dp"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                   android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@mipmap/btn_live_play"
+                        />
+                    <TextView
+    android:id="@+id/live_people"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
             <!--垂直控制按钮右-->
             <LinearLayout
                 android:id="@+id/player_vertical_controller"
                 android:layout_width="40dp"
-                android:layout_height="match_parent"
+                android:layout_height="220dp"
                 android:orientation="vertical"
                 android:layout_gravity="right"
                 android:gravity="center_horizontal"
                 android:background="#00ffffff"
                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 >
                 <Button
-                    android:layout_marginTop="10dp"
+
                     android:id="@+id/video_more_btn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
