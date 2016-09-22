@@ -31,8 +31,9 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
 
-
-        <activity android:name=".ui.ProgramaChild"></activity>
+        <activity android:name=".ui.ProgramaChild"/>
+        <activity android:name=".ui.SearchActivity">
+        </activity>
     </application>
 
 </manifest>
