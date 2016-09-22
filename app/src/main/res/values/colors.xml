@@ -12,4 +12,6 @@
     <color name="tm_white">#11ffffff</color>
     <color name="a_grey">#33999999</color>
     <color name="b_grey">#11999999</color>
+    <color name="btn_gift">#0b0704</color>
+    <color name="btn_gift_pressed">#66999999</color>
 </resources>

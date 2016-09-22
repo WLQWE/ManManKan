@@ -20,17 +20,19 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.BaseActivity"/>
-        <activity android:name=".ui.PlayerActivity">
-        </activity>
+        <activity android:name=".ui.BaseActivity" />
+        <activity android:name=".ui.PlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+
         <activity android:name=".ui.ProgramaChild"/>
         <activity android:name=".ui.SearchActivity">
         </activity>

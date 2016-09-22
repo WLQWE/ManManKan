@@ -13,31 +13,143 @@
         >
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="wrap_content"
+            >
             <!--播放器-->
-<io.vov.vitamio.widget.VideoView
+<ImageView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src="#000000"
+    />
+<com.qianfeng.manmankan.ui.widget.CustomVideoView
     android:id="@+id/player_video"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
-            <!--垂直控制按钮-->
+    android:layout_height="250dp"
+    android:layout_gravity="center"
+    />
+            <!--水平控制顶部-->
             <LinearLayout
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="right"
-                android:gravity="center_horizontal"
-                android:background="#00000000"
+                android:id="@+id/full_top_control"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="top"
+                android:gravity="center_vertical"
+                android:background="#0b0704"
                 android:visibility="gone"
                 >
                 <Button
-                    android:layout_marginTop="5dp"
+                    android:id="@+id/full_top_exit"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/btn_top_exit"
+                    />
+                    <TextView
+                        android:id="@+id/full_title_text"
+                        android:layout_width="200dp"
+                        android:layout_height="35dp" />
+                <Button
+                    android:id="@+id/btn_screen_gift"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
+                    android:text="屏蔽礼物"
+                    android:textSize="17sp"
+                    android:textColor="#676b6b"
+                    android:background="@drawable/btn_screen_gift"
+                    />
+                <Button
+                    android:id="@+id/btn_screen_definition"
+                    android:layout_width="50dp"
+                    android:layout_height="35dp"
+                    android:text="标清"
+                    android:textSize="17sp"
+                    android:textColor="#676b6b"
+                    android:background="@drawable/btn_screen_gift"
+                    />
+                   <CheckBox
+                       android:id="@+id/btn_full_follow"
+                       android:layout_width="35dp"
+                       android:layout_height="35dp"
+                       android:button="@null"
+                       android:background="@drawable/btn_full_follow"
+                       />
+                <Button
+                    android:id="@+id/btn_full_shared"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                     android:background="@drawable/btn_full_shared"
+                    />
+            </LinearLayout>
+            <ListView
+                android:id="@+id/definition_list"
+                android:layout_marginRight="50dp"
+                android:layout_width="300dp"
+                android:layout_height="250dp"
+                android:layout_gravity="right"
+                android:visibility="gone"
+                />
+
+<!--垂直控制按钮左-->
+            <LinearLayout
+                android:id="@+id/player_vertical_controller_left"
+                android:layout_width="40dp"
+                android:layout_height="220dp"
+                android:orientation="vertical"
+                android:layout_gravity="left"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="10dp"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                >
+                <Button
+
+                    android:id="@+id/btn_live_exit"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="top"
+                    android:background="@drawable/btn_live_exit"
+                    />
+                <LinearLayout
+
+                    android:layout_marginTop="150dp"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                   android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@mipmap/btn_live_play"
+                        />
+                    <TextView
+    android:id="@+id/live_people"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+            <!--垂直控制按钮右-->
+            <LinearLayout
+                android:id="@+id/player_vertical_controller"
+                android:layout_width="40dp"
+                android:layout_height="220dp"
+                android:orientation="vertical"
+                android:layout_gravity="right"
+                android:gravity="center_horizontal"
+                android:background="#00ffffff"
+               android:visibility="gone"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                >
+                <Button
+
                     android:id="@+id/video_more_btn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/btn_more"
                     />
                 <CheckBox
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="26dp"
                     android:id="@+id/video_gift"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -45,7 +157,7 @@
                     android:background="@drawable/btn_gift"
                     />
                 <CheckBox
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="26dp"
                     android:id="@+id/video_on_off"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -53,31 +165,89 @@
                     android:background="@drawable/btn_on_of"
                     />
                 <Button
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="26dp"
                     android:id="@+id/video_full_screen"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/btn_full_screen"
                     />
             </LinearLayout>
-            <!--水平控制按钮-->
+            <!--水平控制按钮底部-->
             <LinearLayout
+                android:id="@+id/full_bottom_control"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:background="#0b0704"
                 >
-
-
+               <CheckBox
+                   android:layout_marginLeft="5dp"
+                   android:id="@+id/full_bottom_pause"
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:button="@null"
+                   android:background="@drawable/btn_pause_selector"
+                   />
+                <Button
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_bottom_refresh"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/btn_refresh"
+                    />
+                <Button
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_hot_text"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/btn_hot"
+                    />
+                <EditText
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_edit_text"
+                    android:layout_width="400dp"
+                    android:layout_height="35dp" />
+                <Button
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_send_text"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/btn_send_text"
+                    />
+                <CheckBox
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_toolbar_dan"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/btn_toolbar_dan"
+                    android:button="@null"
+                    />
+                <Button
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/full_gift"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@mipmap/live_gift"
+                    />
             </LinearLayout>
 
         </FrameLayout>
+<LinearLayout
+    android:id="@+id/player_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:weightSum="1">
+       >
 <ImageView
     android:id="@+id/room_icon"
     android:layout_width="40dp"
@@ -163,6 +333,7 @@
             android:id="@+id/room_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+</LinearLayout>
     </LinearLayout>
 
 
