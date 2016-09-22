@@ -24,6 +24,7 @@ import com.qianfeng.manmankan.model.recommends.Index;
 import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.model.recommends.Recommends;
 import com.qianfeng.manmankan.ui.PlayerActivity;
+import com.qianfeng.manmankan.ui.ProgramaChild;
 import com.squareup.picasso.Picasso;
 
 import org.xutils.common.Callback;
@@ -193,9 +194,10 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
 
     //头布局RecyclerView的点击监听
     @Override
-    public void OnItemClick(String classification) {
-        Intent intent = new Intent(getActivity(), PlayerActivity.class);
-        intent.putExtra("classification", classification);
+    public void OnItemClick(String classification,String title) {
+        Intent intent = new Intent(getActivity(), ProgramaChild.class);
+        intent.putExtra("slug", classification);
+        intent.putExtra("name",title);
         getContext().startActivity(intent);
     }
 }

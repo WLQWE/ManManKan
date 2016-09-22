@@ -15,6 +15,7 @@ import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.model.recommends.Lists;
 import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.ui.PlayerActivity;
+import com.qianfeng.manmankan.ui.ProgramaChild;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,9 +106,10 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         Log.e(TAG, "onClick: " + position);
         if (position == 0) {
             adapter.changeRes();
-        }else {
-            Intent intent = new Intent(context, PlayerActivity.class);
-
+        } else {
+            Intent intent = new Intent(context, ProgramaChild.class);
+            intent.putExtra("name", list.get(position + 2).getName());
+            intent.putExtra("slug", list.get(position + 2).getCategory_slug());
             context.startActivity(intent);
         }
     }

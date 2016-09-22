@@ -80,7 +80,7 @@ public class RecommendHeaderAdapter extends RecyclerView.Adapter<RecommendHeader
     @Override
     public void onClick(View v) {
         int position = recyclerView.getChildAdapterPosition(v);
-        listener.OnItemClick(data.get(position).getExt().getClassification());
+        listener.OnItemClick(data.get(position).getExt().getClassification(), data.get(position).getTitle());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -97,6 +97,6 @@ public class RecommendHeaderAdapter extends RecyclerView.Adapter<RecommendHeader
     }
 
     public interface OnItemClickListener {
-        void OnItemClick(String classification);
+        void OnItemClick(String classification, String title);
     }
 }
