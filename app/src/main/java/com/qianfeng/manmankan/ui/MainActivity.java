@@ -1,5 +1,6 @@
 package com.qianfeng.manmankan.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -93,6 +94,7 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     @OnClick(R.id.search)
     public void onClick() {
-
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
 }
