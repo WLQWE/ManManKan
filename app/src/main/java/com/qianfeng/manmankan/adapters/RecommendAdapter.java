@@ -1,8 +1,10 @@
 package com.qianfeng.manmankan.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.model.recommends.Lists;
 import com.qianfeng.manmankan.model.recommends.Recommendation;
+import com.qianfeng.manmankan.ui.PlayerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +25,10 @@ import butterknife.ButterKnife;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> implements View.OnClickListener {
+public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> implements View.OnClickListener, RecommendGridAdapter.OnGridItemClickListener {
 
     private static final String TAG = RecommendAdapter.class.getSimpleName();
+
     private List<List<Recommendation>> data;
 
     private List<Lists> list;
@@ -34,7 +38,6 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
     private Context context;
 
     private boolean flag;
-    private RecommendGridAdapter mAdapter;
 
     public RecommendAdapter(Context context) {
         this.context = context;
@@ -88,17 +91,32 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         right.setBounds(0, 0, right.getMinimumWidth(), right.getMinimumHeight());
         holder.btn.setCompoundDrawables(null, null, right, null);
         holder.btn.setOnClickListener(this);
-        holder.btn.setTag(position);
-        mAdapter = new RecommendGridAdapter(context, data.get(position), flag);
-        holder.gridView.setAdapter(mAdapter);
+        RecommendGridAdapter adapter = new RecommendGridAdapter(context, data.get(position), flag);
+        adapter.setListener(this);
+        holder.gridView.setAdapter(adapter);
+        holder.btn.setTag(R.id.tag_one, position);
+        holder.btn.setTag(R.id.tag_two, adapter);
     }
 
     @Override
     public void onClick(View v) {
-        int position = (Integer) v.getTag();
+        int position = (Integer) v.getTag(R.id.tag_one);
+        RecommendGridAdapter adapter = (RecommendGridAdapter) v.getTag(R.id.tag_two);
+        Log.e(TAG, "onClick: " + position);
         if (position == 0) {
-            mAdapter.updateRes(data.get(0));
+            adapter.changeRes();
+        }else {
+            Intent intent = new Intent(context, PlayerActivity.class);
+
+            context.startActivity(intent);
         }
+    }
+
+    @Override
+    public void onItemClick(String uid) {
+        Intent intent = new Intent(context, PlayerActivity.class);
+        intent.putExtra("uid", uid);
+        context.startActivity(intent);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -115,4 +133,5 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
             ButterKnife.bind(this, itemView);
         }
     }
+
 }

@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
 /**
  * Created by SacuraQH on 2016/9/21.
  */
-public class RecommendGridAdapter extends BaseAdapter {
+public class RecommendGridAdapter extends BaseAdapter implements View.OnClickListener {
 
     private static final String TAG = RecommendGridAdapter.class.getSimpleName();
     private List<Recommendation> data;
@@ -36,9 +36,15 @@ public class RecommendGridAdapter extends BaseAdapter {
 
     private ImageOptions optionsImg;
 
+    private OnGridItemClickListener listener;
+
     private boolean flag;
 
     private int i = 1;
+
+    public void setListener(OnGridItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public RecommendGridAdapter(Context context, List<Recommendation> data, boolean flag) {
         this.flag = flag;
@@ -56,12 +62,10 @@ public class RecommendGridAdapter extends BaseAdapter {
                 .build();
     }
 
-    public void updateRes(List<Recommendation> data) {
+    public void changeRes() {
         Log.e(TAG, "updateRes: " + data.size());
-        this.data.clear();
-        Collections.swap(data, 0, 2 * i);
-        Collections.swap(data, 1, 2 * i + 1);
-        this.data.addAll(data);
+        Collections.swap(this.data, 0, 2 * i);
+        Collections.swap(this.data, 1, 2 * i + 1);
         notifyDataSetChanged();
         i++;
         if (2 * i + 1 >= data.size()) {
@@ -93,9 +97,9 @@ public class RecommendGridAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.programa_child_item, parent, false);
             holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
+            convertView.setTag(R.id.view_tag_one,holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag(R.id.view_tag_one);
         }
         x.image().bind(holder.programaChildShowimg, data.get(position).getLink_object().getThumb(), optionsImg);
         int num = Integer.parseInt(data.get(position).getLink_object().getView());
@@ -108,8 +112,14 @@ public class RecommendGridAdapter extends BaseAdapter {
         holder.programaChildUser.setText(data.get(position).getLink_object().getNick());
         holder.programaChildComtentname.setText(data.get(position).getLink_object().getIntro());
         x.image().bind(holder.programaChildUserpic, data.get(position).getLink_object().getAvatar(), options);
-
+        convertView.setTag(R.id.view_tag_two,data.get(position).getLink_object().getUid());
+        convertView.setOnClickListener(this);
         return convertView;
+    }
+
+    @Override
+    public void onClick(View v) {
+        listener.onItemClick((String) v.getTag(R.id.view_tag_two));
     }
 
     static class ViewHolder {
@@ -127,5 +137,9 @@ public class RecommendGridAdapter extends BaseAdapter {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+    public interface OnGridItemClickListener{
+        void onItemClick(String uid);
     }
 }

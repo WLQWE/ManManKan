@@ -1,5 +1,6 @@
 package com.qianfeng.manmankan.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -22,6 +23,7 @@ import com.qianfeng.manmankan.constans.State;
 import com.qianfeng.manmankan.model.recommends.Index;
 import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.model.recommends.Recommends;
+import com.qianfeng.manmankan.ui.PlayerActivity;
 import com.squareup.picasso.Picasso;
 
 import org.xutils.common.Callback;
@@ -39,7 +41,7 @@ import cn.bingoogolapple.bgabanner.BGABanner;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter {
+public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter, RecommendHeaderAdapter.OnItemClickListener {
 
     public static final String TAG = RecommendFragment.class.getSimpleName();
 
@@ -81,14 +83,15 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
         recommendRecycler.setPagingableListener(this);
         //设置下拉刷新
         recommendRecycler.setOnRefreshListener(this);
-
+        //为轮播图设置适配器
         mHeaderPager.setAdapter(this);
-
+        //为头布局的RecyclerView设置管理器和适配器
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mHeaderRecycler.setLayoutManager(linearLayoutManager);
         headerAdapter = new RecommendHeaderAdapter(getContext());
+        headerAdapter.setListener(this);
         mHeaderRecycler.setAdapter(headerAdapter);
-
+        //
         mAdapter = new RecommendAdapter(getContext());
         recommendRecycler.setAdapter(mAdapter);
 
@@ -102,17 +105,17 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                 Log.e(TAG, "onSuccess: ");
                 Gson gson = new Gson();
                 Recommends recommends = gson.fromJson(result, Recommends.class);
-                List<String> imgs = new ArrayList<>();
                 List<String> tips = new ArrayList<>();
+                List<Index> datas = new ArrayList<>();
                 List<Index> indexs = recommends.getIndexs();
                 for (Index index : indexs) {
                     String recommend_image = index.getLink_object().getRecommend_image();
-                    if (!recommend_image.equals("")) {
-                        imgs.add(recommend_image);
+                    if (recommend_image != "") {
                         tips.add(index.getLink_object().getTitle());
+                        datas.add(index);
                     }
                 }
-                mHeaderPager.setData(imgs, tips);
+                mHeaderPager.setData(datas, tips);
                 headerAdapter.updateRes(recommends.getClassifications());
                 List<List<Recommendation>> data = new ArrayList<>();
                 data.add(recommends.getRecommendations());
@@ -156,8 +159,9 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
 
     @Override
     public void fillBannerItem(BGABanner banner, View view, Object model, int position) {
+        String recommend_image = ((Index) model).getLink_object().getRecommend_image();
         Picasso.with(getActivity())
-                .load((String) model)
+                .load(recommend_image)
                 .placeholder(R.mipmap.ads_default)
                 .into((ImageView) view);
     }
@@ -182,6 +186,16 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     //轮播图的点击监听
     @Override
     public void onBannerItemClick(BGABanner banner, View view, Object model, int position) {
+        Intent intent = new Intent(getContext(), PlayerActivity.class);
+        intent.putExtra("uid", ((Index) model).getLink_object().getUid());
+        getContext().startActivity(intent);
+    }
 
+    //头布局RecyclerView的点击监听
+    @Override
+    public void OnItemClick(String classification) {
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("classification", classification);
+        getContext().startActivity(intent);
     }
 }
