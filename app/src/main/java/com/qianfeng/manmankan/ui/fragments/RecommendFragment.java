@@ -128,6 +128,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onSuccess(String result) {
                 Log.e(TAG, "onSuccess: ");
+                recommendRecycler.setVisibility(View.VISIBLE);
                 loading.setVisibility(View.GONE);
                 headerView.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
@@ -179,6 +180,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.e(TAG, "onError: ");
+                recommendRecycler.setVisibility(View.GONE);
                 loading.setVisibility(View.GONE);
                 errorView = new ErrorView(getContext());
                 errorView.setButtonListener(new View.OnClickListener() {
