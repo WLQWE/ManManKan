@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
     private ErrorView errorView;
     private int page;
     private List<ProgramaChildModel.DataBean> data;
+    private String content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +177,7 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
                 finish();
                 break;
             case R.id.search_search:
-                String content = mContent.getText().toString();
+                content = mContent.getText().toString();
                 setupView(State.DOWN, content);
                 break;
         }
@@ -184,13 +186,13 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
     @Override
     public void onLoadMoreItems() {
         page = 0;
-        setupView(State.UP, mContent.getText().toString());
+        setupView(State.UP, content);
     }
 
     @Override
     public void onRefresh() {
         page++;
-        setupView(State.DOWN, mContent.getText().toString());
+        setupView(State.DOWN, content);
     }
 
     @Override
@@ -199,5 +201,12 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putExtra("uid", uid);
         startActivity(intent);
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+
+        return false;
     }
 }
