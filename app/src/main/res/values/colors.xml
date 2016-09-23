@@ -14,4 +14,6 @@
     <color name="b_grey">#11999999</color>
     <color name="btn_gift">#0b0704</color>
     <color name="btn_gift_pressed">#66999999</color>
+    <color name="text">#ca0516</color>
+    <color name="text_checked">#f2f2f5</color>
 </resources>
