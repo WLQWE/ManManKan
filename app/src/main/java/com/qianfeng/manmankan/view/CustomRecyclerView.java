@@ -421,5 +421,4 @@ public class CustomRecyclerView extends CustomSwipeRefreshLayout implements PrvI
             }
         }
     }
-
 }

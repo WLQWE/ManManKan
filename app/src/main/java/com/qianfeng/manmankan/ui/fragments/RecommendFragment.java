@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.lhh.ptrrv.library.PullToRefreshRecyclerView;
 import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.RecommendAdapter;
 import com.qianfeng.manmankan.adapters.RecommendHeaderAdapter;
@@ -27,7 +26,6 @@ import com.qianfeng.manmankan.model.recommends.Recommendation;
 import com.qianfeng.manmankan.model.recommends.Recommends;
 import com.qianfeng.manmankan.ui.PlayerActivity;
 import com.qianfeng.manmankan.ui.ProgramaChild;
-import com.qianfeng.manmankan.view.CustomRecyclerView;
 import com.qianfeng.manmankan.view.CustomSwipeRefreshLayout;
 import com.qianfeng.manmankan.view.ErrorView;
 import com.squareup.picasso.Picasso;
@@ -47,12 +45,12 @@ import cn.bingoogolapple.bgabanner.BGABanner;
 /**
  * Created by SacuraQH on 2016/9/20.
  */
-public class RecommendFragment extends BaseFragment implements PullToRefreshRecyclerView.PagingableListener, SwipeRefreshLayout.OnRefreshListener, BGABanner.OnItemClickListener, BGABanner.Adapter, RecommendHeaderAdapter.OnItemClickListener, CustomSwipeRefreshLayout.OnRefreshListener {
+public class RecommendFragment extends BaseFragment implements BGABanner.OnItemClickListener, BGABanner.Adapter, RecommendHeaderAdapter.OnItemClickListener, CustomSwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = RecommendFragment.class.getSimpleName();
 
     @BindView(R.id.recommend_recycler)
-    CustomRecyclerView recommendRecycler;
+    RecyclerView recommendRecycler;
 
     @BindView(R.id.recommend_loading)
     ImageView loading;
@@ -60,12 +58,17 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     @BindView(R.id.recommend_container)
     FrameLayout recommendContainer;
 
+    @BindView(R.id.refresh)
+    CustomSwipeRefreshLayout refresh;
+
     BGABanner mHeaderPager;
     RecyclerView mHeaderRecycler;
+
     private RecommendHeaderAdapter headerAdapter;
     private RecommendAdapter mAdapter;
     private View headerView;
     private ErrorView errorView;
+    private int lastVisibleItem;
 
     @Nullable
     @Override
@@ -91,15 +94,6 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
         mHeaderPager = (BGABanner) headerView.findViewById(R.id.recommend_header_pager);
         mHeaderRecycler = (RecyclerView) headerView.findViewById(R.id.recommend_header_recycler);
         mHeaderPager.setOnItemClickListener(this);
-        recommendRecycler.addHeaderView(headerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recommendRecycler.setLayoutManager(layoutManager);
-        //开启刷新
-        recommendRecycler.setSwipeEnable(true);
-        //设置上拉加载
-        recommendRecycler.setPagingableListener(this);
-        //设置下拉刷新
-        recommendRecycler.setOnRefreshListener(this);
         //为轮播图设置适配器
         mHeaderPager.setAdapter(this);
         //为头布局的RecyclerView设置管理器和适配器
@@ -109,9 +103,29 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
         headerAdapter.setListener(this);
         mHeaderRecycler.setAdapter(headerAdapter);
         //
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recommendRecycler.setLayoutManager(layoutManager);
         mAdapter = new RecommendAdapter(getContext());
+        mAdapter.setHeaderView(headerView);
         recommendRecycler.setAdapter(mAdapter);
-        recommendRecycler.onFinishLoading(true, false);
+
+        recommendRecycler.addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == mAdapter.getItemCount()) {
+                    refresh.setRefreshing(true);
+                    setupView(State.DOWN);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            }
+        });
+        refresh.setOnRefreshListener(this);
 
         //设置动画
         AnimationDrawable drawable = (AnimationDrawable) getResources().getDrawable(R.drawable.home_loading);
@@ -128,6 +142,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onSuccess(String result) {
                 Log.e(TAG, "onSuccess: ");
+                recommendRecycler.setVisibility(View.VISIBLE);
                 loading.setVisibility(View.GONE);
                 headerView.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
@@ -143,7 +158,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                     }
                 }
 
-                List<List<Recommendation>> data = new ArrayList<>();
+                ArrayList<List<Recommendation>> data = new ArrayList<>();
                 data.add(recommends.getRecommendations());
                 data.add(recommends.getLols());
                 data.add(recommends.getBeautys());
@@ -167,8 +182,8 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
                         //为头布局的RecyclerView更新数据
                         headerAdapter.updateRes(recommends.getClassifications());
                         //RecyclerView更新数据
-                        mAdapter.updateRes(data, recommends.getLists());
-
+                        mAdapter.updateDatas(data);
+                        mAdapter.setList(recommends.getLists());
                         break;
                     case UP:
 
@@ -179,6 +194,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.e(TAG, "onError: ");
+                recommendRecycler.setVisibility(View.GONE);
                 loading.setVisibility(View.GONE);
                 errorView = new ErrorView(getContext());
                 errorView.setButtonListener(new View.OnClickListener() {
@@ -199,8 +215,7 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
             @Override
             public void onFinished() {
                 Log.e(TAG, "onFinished: ");
-                recommendRecycler.setOnLoadMoreComplete();
-                recommendRecycler.setOnRefreshComplete();
+                refresh.setRefreshing(false);
             }
         });
     }
@@ -217,12 +232,6 @@ public class RecommendFragment extends BaseFragment implements PullToRefreshRecy
     @OnClick(R.id.recommend_focus)
     public void onClick() {
         Toast.makeText(getActivity(), "添加喜爱", Toast.LENGTH_SHORT).show();
-    }
-
-    //上拉加载
-    @Override
-    public void onLoadMoreItems() {
-
     }
 
     //下拉刷新
