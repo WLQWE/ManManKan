@@ -1,5 +1,6 @@
 package com.qianfeng.manmankan.ui.fragments;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
+import com.qianfeng.manmankan.ui.PlayerActivity;
+import com.qianfeng.manmankan.ui.ProgramaChild;
 import com.qianfeng.manmankan.view.ErrorView;
 
 import org.xutils.common.Callback;
@@ -43,7 +46,7 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
     FrameLayout liveFramlayout;
     private ProgramaChildAdapter adapter;
     private ErrorView errorView;
-
+    private List<ProgramaChildModel.DataBean> data;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,7 +73,7 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
         String path = HttpConstants.LIVE_START + HttpConstants.LIVE_END;
         RequestParams params = new RequestParams(path);
         x.http().get(params, new Callback.CommonCallback<String>() {
-            private List<ProgramaChildModel.DataBean> data;
+
 
             @Override
             public void onSuccess(String result) {
@@ -123,7 +126,9 @@ public class LiveFragment extends BaseFragment implements ProgramaChildAdapter.O
 
     @Override
     public void onClick(View view, int position) {
-        Toast.makeText(getContext(), "老" + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), PlayerActivity.class);
+        intent.putExtra("uid",data.get(position).getUid());
+        startActivity(intent);
     }
 
 

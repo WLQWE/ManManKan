@@ -103,11 +103,8 @@ public class ProgramaFragment extends BaseFragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getContext(), "第" + position + "个", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getContext(), ProgramaChild.class);
-
         if (models != null && models.size() > 0) {
-
             intent.putExtra("slug", models.get(position).getSlug());
             intent.putExtra("name", models.get(position).getName());
         } else {
