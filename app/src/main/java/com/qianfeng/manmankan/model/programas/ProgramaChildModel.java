@@ -21,6 +21,16 @@ public class ProgramaChildModel {
     private int page;
     private int size;
     private int total;
+    private int uid;
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
     /**
      * recommend_image :
      * announcement :
