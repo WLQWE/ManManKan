@@ -37,6 +37,7 @@ import com.qianfeng.manmankan.model.playermodels.PlayerModel;
 import com.qianfeng.manmankan.ui.fragments.LeftFragment;
 import com.qianfeng.manmankan.ui.fragments.RightFragment;
 import com.qianfeng.manmankan.utils.LightController;
+import com.qianfeng.manmankan.utils.MyShare;
 import com.qianfeng.manmankan.utils.VolumeController;
 
 import org.greenrobot.eventbus.EventBus;
@@ -408,10 +409,9 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
             case R.id.btn_screen_definition:
                      mDefinitionList.setVisibility(View.VISIBLE);
-
                 break;
             case R.id.btn_full_shared:
-
+                MyShare.showShare();
                 break;
             case R.id.btn_live_exit:
                 finish();
@@ -456,7 +456,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 isFull = true;
                 break;
             case R.id.full_bottom_refresh:
-
+                 Toast.makeText(this,"刷新",Toast.LENGTH_SHORT);
                 break;
             case R.id.full_hot_text:
 
