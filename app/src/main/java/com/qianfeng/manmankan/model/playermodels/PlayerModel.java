@@ -82,7 +82,7 @@ public class PlayerModel {
      * change : up
      */
 
-    private List<RankWeekBean> rank_week;
+    private List<RankTotalBean> rank_week;
     /**
      * send_uid : 2963997
      * score : 155870
@@ -332,11 +332,11 @@ public class PlayerModel {
         this.admins = admins;
     }
 
-    public List<RankWeekBean> getRank_week() {
+    public List<RankTotalBean> getRank_week() {
         return rank_week;
     }
 
-    public void setRank_week(List<RankWeekBean> rank_week) {
+    public void setRank_week(List<RankTotalBean> rank_week) {
         this.rank_week = rank_week;
     }
 

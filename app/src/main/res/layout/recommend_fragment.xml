@@ -28,19 +28,28 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/recommend_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recommend_container">
+        android:layout_height="match_parent">
 
-        <com.qianfeng.manmankan.view.CustomRecyclerView
-            android:id="@+id/recommend_recycler"
+        <com.qianfeng.manmankan.view.CustomSwipeRefreshLayout
+            android:id="@+id/refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recommend_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </com.qianfeng.manmankan.view.CustomSwipeRefreshLayout>
 
         <ImageView
             android:id="@+id/recommend_loading"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"/>
+
     </FrameLayout>
+
 </LinearLayout>

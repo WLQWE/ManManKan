@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,18 +30,27 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.qianfeng.manmankan.R;
+import com.qianfeng.manmankan.adapters.PlayerViewPagerAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
+import com.qianfeng.manmankan.events.EventModel;
 import com.qianfeng.manmankan.model.playermodels.PlayerModel;
+import com.qianfeng.manmankan.ui.fragments.LeftFragment;
+import com.qianfeng.manmankan.ui.fragments.RightFragment;
 import com.qianfeng.manmankan.utils.LightController;
+import com.qianfeng.manmankan.utils.MyShare;
 import com.qianfeng.manmankan.utils.VolumeController;
 
+import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
+import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -128,6 +138,8 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     private Button mPopShare;
     private String uid;
    private DateFormat format;
+    private PlayerViewPagerAdapter adapter;
+    private ImageOptions options;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,13 +149,11 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         initView();
 
     }
-
     private void initView() {
+        options = new ImageOptions.Builder().setCircular(true).build();
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
-
         format=new SimpleDateFormat("MMddHHmm");
-
         mVideo.setOnTouchListener(this);
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
         mScreenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -151,6 +161,16 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         mOnOff.setOnCheckedChangeListener(this);
         mRoomFollowBtn.setOnCheckedChangeListener(this);
         mRoomRemindBtn.setOnCheckedChangeListener(this);
+        String[] tabdata={"聊天","排行"};
+        mRoomTab.addTab(mRoomTab.newTab().setText(tabdata[0]));
+        mRoomTab.addTab(mRoomTab.newTab().setText(tabdata[1]));
+
+        List<Fragment> data=new ArrayList<>();
+        data.add(new LeftFragment());
+        data.add(new RightFragment());
+        adapter = new PlayerViewPagerAdapter(getSupportFragmentManager(),data,tabdata);
+        mRoomViewpager.setAdapter(adapter);
+        mRoomTab.setupWithViewPager(mRoomViewpager);
         getData();
     }
 
@@ -159,6 +179,8 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         String time=format.format(date);
         RequestParams params = new RequestParams(HttpConstants.RECOMMEND_VIEWPAGER_START+uid+HttpConstants.RECOMMEND_VIEWPAGER_MIDDLE+time+HttpConstants.RECOMMEND_VIEWPAGER_END);
         x.http().get(params, new Callback.CommonCallback<String>() {
+
+
             @Override
             public void onSuccess(String result) {
                 if (result==null) {
@@ -166,11 +188,19 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 }
                 Gson gson = new Gson();
                 PlayerModel playerModel = gson.fromJson(result, PlayerModel.class);
+                EventModel eventModel = new EventModel();
+                eventModel.setData(playerModel.getRank_total());
+                eventModel.setDataTwo(playerModel.getRank_week());
+                EventBus.getDefault().post(eventModel);
                 String src = playerModel.getRoom_lines().get(0).getHls().getThree().getSrc();
+                mRoomName.setText(playerModel.getNick());
+                mRoomContent.setText(playerModel.getIntro());
+                x.image().bind(mRoomIcon,playerModel.getAvatar(), options);
                 mVideo.setVideoPath(src);
                 mVideo.start();
-            }
 
+
+            }
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
 
@@ -338,9 +368,11 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ViewGroup.LayoutParams params = mVideo.getLayoutParams();
         params.height = oldHeight;
+        params.width=ViewGroup.LayoutParams.MATCH_PARENT;
         mVideo.setLayoutParams(params);
         isFull = false;
         isLandscape = false;
+        mPlayerBottom.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -377,10 +409,9 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
             case R.id.btn_screen_definition:
                      mDefinitionList.setVisibility(View.VISIBLE);
-
                 break;
             case R.id.btn_full_shared:
-
+                MyShare.showShare();
                 break;
             case R.id.btn_live_exit:
                 finish();
@@ -425,7 +456,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 isFull = true;
                 break;
             case R.id.full_bottom_refresh:
-
+                 Toast.makeText(this,"刷新",Toast.LENGTH_SHORT);
                 break;
             case R.id.full_hot_text:
 
@@ -444,4 +475,6 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
         }
     }
+
+
 }

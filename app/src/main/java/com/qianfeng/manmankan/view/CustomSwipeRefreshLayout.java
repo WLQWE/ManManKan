@@ -585,8 +585,10 @@ public class CustomSwipeRefreshLayout extends ViewGroup implements NestedScrolli
         child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
         int circleWidth = mCircleView.getMeasuredWidth();
         int circleHeight = mCircleView.getMeasuredHeight();
-        mCircleView.layout((width / 2 - circleWidth / 2), mCurrentTargetOffsetTop,
-                (width / 2 + circleWidth / 2), mCurrentTargetOffsetTop + circleHeight);
+//        mCircleView.layout((width / 2 - circleWidth / 2), mCurrentTargetOffsetTop,
+//                (width / 2 + circleWidth / 2), mCurrentTargetOffsetTop + circleHeight);
+        mCircleView.layout(childLeft, mCurrentTargetOffsetTop,
+                childLeft+circleWidth, mCurrentTargetOffsetTop + circleHeight);
 
     }
 

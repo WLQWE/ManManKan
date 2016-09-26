@@ -1,10 +1,12 @@
 package com.qianfeng.manmankan.ui;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +20,7 @@ import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.ProgramaChildAdapter;
 import com.qianfeng.manmankan.constans.State;
 import com.qianfeng.manmankan.model.PostParams;
+import com.qianfeng.manmankan.model.SearchModel;
 import com.qianfeng.manmankan.model.programas.ProgramaChildModel;
 import com.qianfeng.manmankan.view.CustomRecyclerView;
 import com.qianfeng.manmankan.view.CustomSwipeRefreshLayout;
@@ -33,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SearchActivity extends AppCompatActivity implements PullToRefreshRecyclerView.PagingableListener, CustomSwipeRefreshLayout.OnRefreshListener {
+public class SearchActivity extends AppCompatActivity implements PullToRefreshRecyclerView.PagingableListener, CustomSwipeRefreshLayout.OnRefreshListener, ProgramaChildAdapter.OnClickItemListener {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
     @BindView(R.id.search_back)
@@ -50,6 +53,9 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
     FrameLayout searchContainer;
     private ProgramaChildAdapter mAdapter;
     private ErrorView errorView;
+    private int page;
+    private List<ProgramaChildModel.DataBean> data;
+    private String content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,7 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
         mRecycler.setOnRefreshListener(this);
 
         mAdapter = new ProgramaChildAdapter(this);
+        mAdapter.setListener(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.onFinishLoading(true, false);
 
@@ -82,38 +89,45 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
     }
 
     private void setupView(final State state, String content) {
+        searchContainer.removeView(errorView);
         if (!content.equals("")) {
             loading.setVisibility(View.VISIBLE);
-            searchContainer.removeView(errorView);
             RequestParams params = new RequestParams("http://www.quanmin.tv/site/search");
+            PostParams postParams = new PostParams();
             PostParams.PBean pBean = new PostParams.PBean();
             pBean.setSize(10);
             pBean.setKey(content);
-            pBean.setPage(0);
+            pBean.setPage(page);
             pBean.setCategoryId(0);
-            params.addBodyParameter("device", "862973033141263");
-            params.addBodyParameter("v", "2.1.3");
-            params.addBodyParameter("screen", "2");
-            params.addBodyParameter("ch", "360zhushou");
-            params.addBodyParameter("sh", "1280");
-            params.addBodyParameter("p", pBean, null);
-            params.addBodyParameter("sw", "720");
-            params.addBodyParameter("uid", "19b8a4db7d43");
-            params.addBodyParameter("net", "0");
-            params.addBodyParameter("ver", "4");
-            params.addBodyParameter("os", "1");
-
+            postParams.setDevice("862973033141263");
+            postParams.setV("2.1.3");
+            postParams.setScreen("2");
+            postParams.setCh("360zhushou");
+            postParams.setSh(1280);
+            postParams.setP(pBean);
+            postParams.setSw(720);
+            postParams.setUid("19b8a4db7d43");
+            postParams.setNet("0");
+            postParams.setVer("4");
+            postParams.setOs("1");
+            String json = new Gson().toJson(postParams);
+            params.setBodyContent(json);
             x.http().post(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
-                    Log.e(TAG, "onSuccess: "+result);
+                    Log.e(TAG, "onSuccess: " + result);
+                    mRecycler.setVisibility(View.VISIBLE);
                     loading.setVisibility(View.GONE);
                     Gson gson = new Gson();
-                    ProgramaChildModel childModel = gson.fromJson(result, ProgramaChildModel.class);
-                    List<ProgramaChildModel.DataBean> data = childModel.getData();
+                    SearchModel searchModel = gson.fromJson(result, SearchModel.class);
+                    data = searchModel.getData().getItem();
+                    Log.e(TAG, "onSuccess: " + data.size());
                     if (data != null) {
                         switch (state) {
                             case DOWN:
+                                if (data.size() == 0) {
+                                    Toast.makeText(SearchActivity.this, "未查询到匹配结果", Toast.LENGTH_SHORT).show();
+                                }
                                 mAdapter.updateRes(data);
                                 break;
                             case UP:
@@ -126,6 +140,7 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                     Log.e(TAG, "onError: ");
+                    mRecycler.setVisibility(View.GONE);
                     loading.setVisibility(View.GONE);
                     errorView = new ErrorView(SearchActivity.this);
                     errorView.setButtonListener(new View.OnClickListener() {
@@ -140,12 +155,14 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
 
                 @Override
                 public void onCancelled(CancelledException cex) {
-
+                    Log.e(TAG, "onCancelled: ");
                 }
 
                 @Override
                 public void onFinished() {
-
+                    Log.e(TAG, "onFinished: ");
+                    mRecycler.setOnRefreshComplete();
+                    mRecycler.setOnLoadMoreComplete();
                 }
             });
         } else {
@@ -160,7 +177,7 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
                 finish();
                 break;
             case R.id.search_search:
-                String content = mContent.getText().toString();
+                content = mContent.getText().toString();
                 setupView(State.DOWN, content);
                 break;
         }
@@ -168,11 +185,28 @@ public class SearchActivity extends AppCompatActivity implements PullToRefreshRe
 
     @Override
     public void onLoadMoreItems() {
-        setupView(State.UP, mContent.getText().toString());
+        page = 0;
+        setupView(State.UP, content);
     }
 
     @Override
     public void onRefresh() {
-        setupView(State.DOWN, mContent.getText().toString());
+        page++;
+        setupView(State.DOWN, content);
+    }
+
+    @Override
+    public void onClick(View view, int position) {
+        String uid = data.get(position).getUid();
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra("uid", uid);
+        startActivity(intent);
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+
+        return false;
     }
 }
