@@ -1,7 +1,6 @@
 package com.qianfeng.manmankan;
 
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.squareup.picasso.Picasso;
@@ -26,9 +25,5 @@ public class KanTVApp extends Application {
                 .loggingEnabled(true);
 
         Picasso.setSingletonInstance(builder.build());
-    }
-
-    public static Context getAppContext() {
-        return getAppContext();
     }
 }
