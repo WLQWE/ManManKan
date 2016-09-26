@@ -187,6 +187,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         mRoomViewpager.setAdapter(adapter);
         mRoomTab.setupWithViewPager(mRoomViewpager);
         getData();
+        mFullBottomPause.setOnCheckedChangeListener(this);
     }
 
     private void getData() {
@@ -376,6 +377,14 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                     mRoomRemindCircle.startAnimation(left);
                 }
                 break;
+            case R.id.full_bottom_pause:
+                if (isChecked) {
+                    mVideo.pause();
+                }else {
+                    mVideo.start();
+                }
+                break;
+
         }
     }
 
