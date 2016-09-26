@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 /**
  * Created by 亚奇 on 2016/9/23.
  */
-public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.ViewHolder> {
+ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private List<PlayerModel.RankTotalBean> data;
     private int id= R.mipmap.top1;

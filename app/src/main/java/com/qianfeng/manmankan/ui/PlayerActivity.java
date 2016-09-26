@@ -411,7 +411,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                      mDefinitionList.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_full_shared:
-                MyShare.showShare();
+                MyShare.showShare(this);
                 break;
             case R.id.btn_live_exit:
                 finish();
