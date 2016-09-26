@@ -21,6 +21,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -119,6 +120,18 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     Button mFullGift;
     @BindView(R.id.definition_list)
     ListView mDefinitionList;
+    @BindView(R.id.full_title_text)
+    TextView mFullTitleText;
+    @BindView(R.id.btn_full_follow)
+    CheckBox mBtnFullFollow;
+    @BindView(R.id.live_people)
+    TextView mLivePeople;
+    @BindView(R.id.full_bottom_pause)
+    CheckBox mFullBottomPause;
+    @BindView(R.id.full_edit_text)
+    EditText mFullEditText;
+    @BindView(R.id.full_toolbar_dan)
+    CheckBox mFullToolbarDan;
     private int mScreenHeight;
     private int mScreenWidth;
     //    刚按下时的位置
@@ -137,9 +150,10 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
     private Button mReport;
     private Button mPopShare;
     private String uid;
-   private DateFormat format;
+    private DateFormat format;
     private PlayerViewPagerAdapter adapter;
     private ImageOptions options;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,11 +163,12 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         initView();
 
     }
+
     private void initView() {
         options = new ImageOptions.Builder().setCircular(true).build();
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
-        format=new SimpleDateFormat("MMddHHmm");
+        format = new SimpleDateFormat("MMddHHmm");
         mVideo.setOnTouchListener(this);
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
         mScreenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -161,30 +176,30 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         mOnOff.setOnCheckedChangeListener(this);
         mRoomFollowBtn.setOnCheckedChangeListener(this);
         mRoomRemindBtn.setOnCheckedChangeListener(this);
-        String[] tabdata={"聊天","排行"};
+        String[] tabdata = {"聊天", "排行"};
         mRoomTab.addTab(mRoomTab.newTab().setText(tabdata[0]));
         mRoomTab.addTab(mRoomTab.newTab().setText(tabdata[1]));
 
-        List<Fragment> data=new ArrayList<>();
+        List<Fragment> data = new ArrayList<>();
         data.add(new LeftFragment());
         data.add(new RightFragment());
-        adapter = new PlayerViewPagerAdapter(getSupportFragmentManager(),data,tabdata);
+        adapter = new PlayerViewPagerAdapter(getSupportFragmentManager(), data, tabdata);
         mRoomViewpager.setAdapter(adapter);
         mRoomTab.setupWithViewPager(mRoomViewpager);
         getData();
     }
 
     private void getData() {
-        Date date=new Date();
-        String time=format.format(date);
-        RequestParams params = new RequestParams(HttpConstants.RECOMMEND_VIEWPAGER_START+uid+HttpConstants.RECOMMEND_VIEWPAGER_MIDDLE+time+HttpConstants.RECOMMEND_VIEWPAGER_END);
+        Date date = new Date();
+        String time = format.format(date);
+        RequestParams params = new RequestParams(HttpConstants.RECOMMEND_VIEWPAGER_START + uid + HttpConstants.RECOMMEND_VIEWPAGER_MIDDLE + time + HttpConstants.RECOMMEND_VIEWPAGER_END);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
 
             @Override
             public void onSuccess(String result) {
-                if (result==null) {
-                    Log.e(TAG, "onSuccess: "+"result-------空" );
+                if (result == null) {
+                    Log.e(TAG, "onSuccess: " + "result-------空");
                 }
                 Gson gson = new Gson();
                 PlayerModel playerModel = gson.fromJson(result, PlayerModel.class);
@@ -193,14 +208,15 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 eventModel.setDataTwo(playerModel.getRank_week());
                 EventBus.getDefault().post(eventModel);
                 String src = playerModel.getRoom_lines().get(0).getHls().getThree().getSrc();
+
                 mRoomName.setText(playerModel.getNick());
                 mRoomContent.setText(playerModel.getIntro());
-                x.image().bind(mRoomIcon,playerModel.getAvatar(), options);
+                x.image().bind(mRoomIcon, playerModel.getAvatar(), options);
                 mVideo.setVideoPath(src);
                 mVideo.start();
 
-
             }
+
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
 
@@ -338,6 +354,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 if (isChecked) {
                     mRoomFollowText.setText("已关注");
                 } else {
+                    mRoomRemindBtn.setChecked(false);
                     mRoomFollowText.setText("关注");
                 }
                 break;
@@ -368,7 +385,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ViewGroup.LayoutParams params = mVideo.getLayoutParams();
         params.height = oldHeight;
-        params.width=ViewGroup.LayoutParams.MATCH_PARENT;
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         mVideo.setLayoutParams(params);
         isFull = false;
         isLandscape = false;
@@ -408,7 +425,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 }
                 break;
             case R.id.btn_screen_definition:
-                     mDefinitionList.setVisibility(View.VISIBLE);
+                mDefinitionList.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_full_shared:
                 MyShare.showShare();
@@ -456,7 +473,7 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 isFull = true;
                 break;
             case R.id.full_bottom_refresh:
-                 Toast.makeText(this,"刷新",Toast.LENGTH_SHORT);
+                Toast.makeText(this, "刷新", Toast.LENGTH_SHORT);
                 break;
             case R.id.full_hot_text:
 

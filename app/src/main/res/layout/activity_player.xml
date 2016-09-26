@@ -45,7 +45,7 @@
                     />
                     <TextView
                         android:id="@+id/full_title_text"
-                        android:layout_width="200dp"
+                        android:layout_width="300dp"
                         android:layout_height="35dp" />
                 <Button
                     android:id="@+id/btn_screen_gift"
