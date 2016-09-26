@@ -32,12 +32,14 @@ import com.google.gson.Gson;
 import com.qianfeng.manmankan.R;
 import com.qianfeng.manmankan.adapters.PlayerViewPagerAdapter;
 import com.qianfeng.manmankan.constans.HttpConstants;
+import com.qianfeng.manmankan.events.EventModel;
 import com.qianfeng.manmankan.model.playermodels.PlayerModel;
 import com.qianfeng.manmankan.ui.fragments.LeftFragment;
 import com.qianfeng.manmankan.ui.fragments.RightFragment;
 import com.qianfeng.manmankan.utils.LightController;
 import com.qianfeng.manmankan.utils.VolumeController;
 
+import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
@@ -146,7 +148,6 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
         initView();
 
     }
-
     private void initView() {
         options = new ImageOptions.Builder().setCircular(true).build();
         Intent intent = getIntent();
@@ -186,12 +187,18 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 }
                 Gson gson = new Gson();
                 PlayerModel playerModel = gson.fromJson(result, PlayerModel.class);
+                EventModel eventModel = new EventModel();
+                eventModel.setData(playerModel.getRank_total());
+                eventModel.setDataTwo(playerModel.getRank_week());
+                EventBus.getDefault().post(eventModel);
                 String src = playerModel.getRoom_lines().get(0).getHls().getThree().getSrc();
                 mRoomName.setText(playerModel.getNick());
                 mRoomContent.setText(playerModel.getIntro());
                 x.image().bind(mRoomIcon,playerModel.getAvatar(), options);
                 mVideo.setVideoPath(src);
                 mVideo.start();
+
+
             }
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
@@ -468,4 +475,6 @@ public class PlayerActivity extends BaseActivity implements View.OnTouchListener
                 break;
         }
     }
+
+
 }

@@ -43,7 +43,7 @@ public class LeftFragment extends BaseFragment implements Handler.Callback{
     private void initView() {
         mRecycler = (RecyclerView) layout.findViewById(R.id.tell_recycler);
         data=new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 20; i++) {
             data.add("我一个达不溜");
             data.add("猿计划：撸鱼");
             data.add("致命碘盐");
@@ -62,12 +62,11 @@ public class LeftFragment extends BaseFragment implements Handler.Callback{
         TellAdapter adapter = new TellAdapter(getContext(), data);
         mRecycler.setAdapter(adapter);
 
-        mHandler.sendEmptyMessageDelayed(100,1000);
+        mHandler.sendEmptyMessageDelayed(100,500);
     }
 
     @Override
     public boolean handleMessage(Message msg) {
-        Log.e("erer", "handleMessage: ");
         firstVisibleItemPosition= layoutManager.findFirstVisibleItemPosition();
         gotopage();
 mHandler.sendEmptyMessageDelayed(100,1000);
@@ -76,7 +75,6 @@ mHandler.sendEmptyMessageDelayed(100,1000);
     public void gotopage(){
 
         int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-        Log.e("erer", "handleMessage: "+firstVisibleItemPosition+"   "+lastVisibleItemPosition);
         firstVisibleItemPosition++;
        layoutManager.scrollToPosition(lastVisibleItemPosition+1);
 //        layoutManager.scrollToPosition(5);
